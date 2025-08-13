@@ -1,7 +1,7 @@
 import mysql from 'mysql2/promise';
 import 'dotenv/config';
 
-// Variables de entorno requeridas para MariaDB
+
 const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_DATABASE', 'DB_PORT', 'MASTER_API_KEY'];
 
 for (const varName of requiredEnvVars) {
@@ -23,11 +23,11 @@ const dbSettings = {
     acquireTimeout: 60000,
     waitForConnections: true,
     reconnect: true,
-    // Configuración SSL para producción (muchos proveedores lo requieren)
+    // Configuración SSL
     ssl: process.env.NODE_ENV === 'production' ? {
         rejectUnauthorized: false
     } : false,
-    // Configuraciones adicionales para estabilidad en producción
+
     timeout: 60000,
     keepAliveInitialDelay: 0,
     enableKeepAlive: true

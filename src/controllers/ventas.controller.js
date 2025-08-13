@@ -1,4 +1,4 @@
-// src/controllers/ventas.controller.js
+
 import { db } from '../db.js';
 
 export const getVentas = async (req, res) => {

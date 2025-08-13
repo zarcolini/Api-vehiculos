@@ -8,27 +8,27 @@ const app = express();
 
 console.log("🔐 Clave maestra cargada:", process.env.MASTER_API_KEY);
 
-// Middleware para logging de solicitudes
+
 app.use((req, res, next) => {
     console.log(`>>> Solicitud Recibida: ${req.method} ${req.originalUrl}`);
     next();
 });
 
-// Middlewares principales
+
 app.use(cors());
 app.use(express.json());
 
 // Rutas
 app.use('/api', ventasRoutes);
 
-// Middleware para rutas no encontradas
+
 app.use((req, res, next) => {
     res.status(404).json({
         message: 'Endpoint no encontrado'
     });
 });
 
-// Inicialización del servidor
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Servidor de solo lectura corriendo en el puerto ${PORT}`);
