@@ -22,7 +22,15 @@ const dbSettings = {
     queueLimit: 0,
     acquireTimeout: 60000,
     waitForConnections: true,
-    reconnect: true
+    reconnect: true,
+    // Configuración SSL para producción (muchos proveedores lo requieren)
+    ssl: process.env.NODE_ENV === 'production' ? {
+        rejectUnauthorized: false
+    } : false,
+    // Configuraciones adicionales para estabilidad en producción
+    timeout: 60000,
+    keepAliveInitialDelay: 0,
+    enableKeepAlive: true
 };
 
 export async function getConnection() {
@@ -32,11 +40,19 @@ export async function getConnection() {
         // Probar la conexión
         const connection = await pool.getConnection();
         console.log('✅ Conexión a MariaDB establecida correctamente.');
+        console.log(`🌐 Conectado a: ${process.env.DB_HOST}:${process.env.DB_PORT}`);
+        console.log(`📊 Base de datos: ${process.env.DB_DATABASE}`);
         connection.release();
         
         return pool;
     } catch (error) {
         console.error('❌ Error al conectar con MariaDB:', error.message);
+        console.error('🔍 Detalles del error:', {
+            host: process.env.DB_HOST,
+            port: process.env.DB_PORT,
+            database: process.env.DB_DATABASE,
+            user: process.env.DB_USER
+        });
         process.exit(1);
     }
 }

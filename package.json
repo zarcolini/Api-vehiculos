@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "API de ventas para MariaDB desplegada en Render",
   "type": "module",
-  "main": "src/app.js",
+  "main": "src/index.js",
   "scripts": {
     "start": "node src/app.js",
     "dev": "node --watch src/app.js",
@@ -29,6 +29,6 @@
     "express",
     "render"
   ],
-  "author": "Tu Nombre",
+  "author": "Cristhian Zavala",
   "license": "MIT"
 }
