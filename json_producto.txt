@@ -1,0 +1,63 @@
+{
+  "// IDENTIFICACIÓN": "=== Campos de identificación ===",
+  "id": 123,
+  "codigo_alterno": "ABC123",
+  "nombre": "Honda Civic",
+  
+  "// ESPECIFICACIONES DEL VEHÍCULO": "=== Información técnica del vehículo ===",
+  "marca": "Honda",
+  "anio": "2020",
+  "anio_desde": "2018",
+  "anio_hasta": "2023",
+  "modelo": "Civic",
+  "color": "Blanco",
+  "cilindrada": "1600",
+  "tipo_vehiculo": "Sedan",
+  
+  "// IDENTIFICADORES DEL VEHÍCULO": "=== Números de serie e identificación ===",
+  "serie": "HC123456789",
+  "motor": "D16A1",
+  "placa": "ABC-1234",
+  "chasis": "JHMES12345678901",
+  
+  "// PRECIOS - EXACTOS": "=== Búsqueda por precios exactos ===",
+  "precio_costo": 450000.50,
+  "precio_venta": 520000.00,
+  
+  "// PRECIOS - RANGOS": "=== Búsqueda por rangos de precios ===",
+  "precio_costo_minimo": 400000,
+  "precio_costo_maximo": 500000,
+  "precio_venta_minimo": 500000,
+  "precio_venta_maximo": 600000,
+  
+  "// KILOMETRAJE - EXACTO": "=== Búsqueda por kilometraje exacto ===",
+  "km": 25000,
+  "horas": 1500.5,
+  
+  "// KILOMETRAJE - RANGOS": "=== Búsqueda por rangos de kilometraje ===",
+  "km_minimo": 10000,
+  "km_maximo": 50000,
+  "horas_minimo": 1000,
+  "horas_maximo": 2000,
+  
+  "// ESTADOS Y DISPONIBILIDAD": "=== Filtros de estado (usar 1 o 0) ===",
+  "habilitado": 1,
+  "congelado": 0,
+  "item_venta": 1,
+  "item_compra": 1,
+  "item_inventario": 1,
+  
+  "// TIPOS Y CLASIFICACIÓN": "=== Tipos y clasificaciones ===",
+  "tipo": 1,
+  "tipo_mant": "Preventivo",
+  "codigo_grupo": "VEH001",
+  "clase": "A",
+  
+  "// NOTAS DE USO": {
+    "texto_parcial": "Para campos como nombre, marca, modelo, color, etc., puedes buscar texto parcial. Ej: 'Hond' encontrará 'Honda'",
+    "rangos_numericos": "Usa _minimo y _maximo para rangos en precios, kilometraje, años y horas",
+    "valores_booleanos": "Para habilitado, congelado, item_venta, item_compra, item_inventario usa 1 (verdadero) o 0 (falso)",
+    "tipo_mantenimiento": "Los valores válidos son 'Preventivo' o 'Correctivo'",
+    "combinaciones": "Puedes combinar cualquier campo para búsquedas muy específicas"
+  }
+}
