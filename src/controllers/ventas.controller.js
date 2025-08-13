@@ -191,9 +191,21 @@ export const getTableStructure = async (req, res) => {
         });
     }
     
+    // Validar que el nombre de tabla solo contenga caracteres válidos (seguridad)
+    const tableNameRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+    if (!tableNameRegex.test(tableName)) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'El nombre de la tabla contiene caracteres no válidos.'
+        });
+    }
+    
     try {
-        // Consulta para obtener la estructura de la tabla
-        const [rows] = await db.execute('DESCRIBE ??', [tableName]);
+        // Para MariaDB, construimos la consulta directamente (de forma segura después de validar)
+        const query = `DESCRIBE ${tableName}`;
+        console.log(`Ejecutando consulta: ${query}`);
+        
+        const [rows] = await db.execute(query);
         
         if (rows.length === 0) {
             return res.status(404).json({
@@ -227,7 +239,7 @@ export const getTableStructure = async (req, res) => {
         console.error(`!!! ERROR EN EL CONTROLADOR [getTableStructure] para tabla '${tableName}':`, error.message);
         
         // Si el error es porque la tabla no existe
-        if (error.code === 'ER_NO_SUCH_TABLE') {
+        if (error.code === 'ER_NO_SUCH_TABLE' || error.message.includes("doesn't exist")) {
             return res.status(404).json({
                 status: 'fail',
                 message: `La tabla '${tableName}' no existe en la base de datos.`
