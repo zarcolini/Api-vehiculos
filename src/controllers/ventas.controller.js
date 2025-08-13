@@ -74,15 +74,20 @@ export const searchVentas = async (req, res) => {
     // Agregar ordenamiento
     baseQuery += ' ORDER BY id DESC';
     
-    // Agregar límite si se especifica - CORREGIR VALIDACIÓN
-    if (maxResults && Number(maxResults) > 0) {
-        baseQuery += ' LIMIT ?';
-        queryParams.push(Number(maxResults));
-        console.log(`Aplicando límite de ${maxResults} resultados`);
+    // Agregar límite si se especifica - VALIDACIÓN MEJORADA
+    if (maxResults) {
+        const limitValue = Number(maxResults);
+        if (limitValue > 0 && Number.isInteger(limitValue)) {
+            baseQuery += ' LIMIT ?';
+            queryParams.push(limitValue);
+            console.log(`Aplicando límite de ${limitValue} resultados`);
+        } else {
+            console.log(`max_results inválido (${maxResults}), ignorando límite`);
+        }
     }
     
     console.log(`Consulta SQL a ejecutar: ${baseQuery}`);
-    console.log(`Parámetros: [${queryParams.join(', ')}]`);
+    console.log(`Parámetros finales: [${queryParams.map(p => `${p} (${typeof p})`).join(', ')}]`);
 
     try {
         const [rows] = await db.execute(baseQuery, queryParams);
@@ -333,6 +338,7 @@ export const searchProductos = async (req, res) => {
     const queryParams = [];
 
     console.log('Parámetros después de remover max_results:', searchParams);
+    console.log('maxResults extraído:', maxResults);
 
     // Construye la consulta dinámicamente
     for (const key in searchParams) {
@@ -340,19 +346,22 @@ export const searchProductos = async (req, res) => {
             const fieldConfig = validFields[key];
             const value = searchParams[key];
             
-            console.log(`Procesando campo: ${key} = ${value}`);
+            console.log(`Procesando campo: ${key} = ${value} (tipo: ${typeof value})`);
             
             if (key === 'ids' && Array.isArray(value)) {
                 // Manejo especial para array de IDs
                 const placeholders = value.map(() => '?').join(',');
                 baseQuery += ` AND ${fieldConfig.column} IN (${placeholders})`;
                 queryParams.push(...value);
+                console.log(`Array de IDs agregado: ${value}`);
             } else if (fieldConfig.operator === 'LIKE') {
                 baseQuery += ` AND ${fieldConfig.column} ${fieldConfig.operator} ?`;
                 queryParams.push(`%${value}%`);
+                console.log(`LIKE agregado: %${value}%`);
             } else {
                 baseQuery += ` AND ${fieldConfig.column} ${fieldConfig.operator} ?`;
                 queryParams.push(value);
+                console.log(`Valor exacto agregado: ${value} (tipo: ${typeof value})`);
             }
         } else {
             console.warn(`ADVERTENCIA: Campo de búsqueda no válido '${key}' ha sido ignorado.`);
@@ -373,6 +382,12 @@ export const searchProductos = async (req, res) => {
     console.log(`Parámetros: [${queryParams.join(', ')}]`);
 
     try {
+        // Validar parámetros antes de ejecutar la consulta
+        console.log('Validando parámetros antes de la consulta:');
+        queryParams.forEach((param, index) => {
+            console.log(`Parámetro ${index}: ${param} (${typeof param})`);
+        });
+
         const [rows] = await db.execute(baseQuery, queryParams);
 
         if (rows.length === 0) {
@@ -392,7 +407,8 @@ export const searchProductos = async (req, res) => {
     } catch (error) {
         console.error(`!!! ERROR EN EL CONTROLADOR [searchProductos]:`, error.message);
         console.error(`Query que falló: ${baseQuery}`);
-        console.error(`Parámetros que fallaron: [${queryParams.join(', ')}]`);
+        console.error(`Parámetros que fallaron: [${queryParams.map(p => `${p} (${typeof p})`).join(', ')}]`);
+        console.error('Error completo:', error);
         res.status(500).json({
             status: 'error',
             message: 'Error interno del servidor al buscar los productos.'
