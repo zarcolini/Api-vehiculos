@@ -74,10 +74,10 @@ export const searchVentas = async (req, res) => {
     // Agregar ordenamiento
     baseQuery += ' ORDER BY id DESC';
     
-    // Agregar límite si se especifica
-    if (maxResults && !isNaN(maxResults) && maxResults > 0) {
+    // Agregar límite si se especifica - CORREGIR VALIDACIÓN
+    if (maxResults && Number(maxResults) > 0) {
         baseQuery += ' LIMIT ?';
-        queryParams.push(parseInt(maxResults));
+        queryParams.push(Number(maxResults));
         console.log(`Aplicando límite de ${maxResults} resultados`);
     }
     
@@ -250,10 +250,10 @@ export const searchProductos = async (req, res) => {
             let query = 'SELECT * FROM producto ORDER BY id DESC';
             const queryParams = [];
             
-            // Agregar límite si se especifica
-            if (maxResults && !isNaN(maxResults) && maxResults > 0) {
+            // Agregar límite si se especifica - CORREGIR VALIDACIÓN
+            if (maxResults && Number(maxResults) > 0) {
                 query += ' LIMIT ?';
-                queryParams.push(parseInt(maxResults));
+                queryParams.push(Number(maxResults));
                 console.log(`Aplicando límite de ${maxResults} resultados`);
             }
             
@@ -362,10 +362,10 @@ export const searchProductos = async (req, res) => {
     // Agregar ordenamiento
     baseQuery += ' ORDER BY id DESC';
     
-    // Agregar límite si se especifica
-    if (maxResults && !isNaN(maxResults) && maxResults > 0) {
+    // Agregar límite si se especifica - CORREGIR VALIDACIÓN
+    if (maxResults && Number(maxResults) > 0) {
         baseQuery += ' LIMIT ?';
-        queryParams.push(parseInt(maxResults));
+        queryParams.push(Number(maxResults));
         console.log(`Aplicando límite de ${maxResults} resultados`);
     }
     
@@ -456,10 +456,10 @@ export const getProductosDisponibles = async (req, res) => {
         
         baseQuery += ` ORDER BY p.id DESC`;
         
-        // Agregar límite si se especifica
-        if (maxResults && !isNaN(maxResults) && maxResults > 0) {
+        // Agregar límite si se especifica - CORREGIR VALIDACIÓN
+        if (maxResults && Number(maxResults) > 0) {
             baseQuery += ' LIMIT ?';
-            queryParams.push(parseInt(maxResults));
+            queryParams.push(Number(maxResults));
             console.log(`Aplicando límite de ${maxResults} resultados`);
         }
         
@@ -535,10 +535,10 @@ export const getProductosVendidos = async (req, res) => {
         
         baseQuery += ` ORDER BY v.fecha_venta DESC`;
         
-        // Agregar límite si se especifica
-        if (maxResults && !isNaN(maxResults) && maxResults > 0) {
+        // Agregar límite si se especifica - CORREGIR VALIDACIÓN
+        if (maxResults && Number(maxResults) > 0) {
             baseQuery += ' LIMIT ?';
-            queryParams.push(parseInt(maxResults));
+            queryParams.push(Number(maxResults));
             console.log(`Aplicando límite de ${maxResults} resultados`);
         }
         
@@ -666,10 +666,10 @@ export const getEstadoVentaProducto = async (req, res) => {
 
     baseQuery += ` ORDER BY p.id DESC`;
     
-    // Agregar límite si se especifica
-    if (maxResults && !isNaN(maxResults) && maxResults > 0) {
+    // Agregar límite si se especifica - CORREGIR VALIDACIÓN
+    if (maxResults && Number(maxResults) > 0) {
         baseQuery += ' LIMIT ?';
-        queryParams.push(parseInt(maxResults));
+        queryParams.push(Number(maxResults));
         console.log(`Aplicando límite de ${maxResults} resultados`);
     }
     
