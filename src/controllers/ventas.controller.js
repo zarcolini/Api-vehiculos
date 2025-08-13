@@ -265,7 +265,7 @@ export const getTableStructure = async (req, res) => {
 export const getProductos = async (req, res) => {
     console.log("-> Solicitud GET en /api/productos. Consultando la base de datos...");
     try {
-        const [rows] = await db.execute('SELECT * FROM productos');
+        const [rows] = await db.execute('SELECT * FROM producto');
         console.log(`Número de productos encontrados: ${rows.length}`);
         res.status(200).json({ 
             status: 'success', 
@@ -298,7 +298,7 @@ export const getProductoById = async (req, res) => {
     }
     
     try {
-        const [rows] = await db.execute('SELECT * FROM productos WHERE id = ?', [id]);
+        const [rows] = await db.execute('SELECT * FROM producto WHERE id = ?', [id]);
         
         if (rows.length === 0) {
             return res.status(404).json({ 
@@ -389,7 +389,7 @@ export const searchProductos = async (req, res) => {
         clase: { column: 'clase', operator: 'LIKE' }
     };
 
-    let baseQuery = 'SELECT * FROM productos WHERE 1=1';
+    let baseQuery = 'SELECT * FROM producto WHERE 1=1';
     const queryParams = [];
 
     // Construye la consulta dinámicamente
