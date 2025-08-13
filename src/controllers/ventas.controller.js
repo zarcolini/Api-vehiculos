@@ -233,14 +233,15 @@ export const getTableStructure = async (req, res) => {
  * @param {import('express').Response} res Objeto de respuesta de Express.
  */
 export const searchProductos = async (req, res) => {
-    const searchParams = req.body;
-    console.log(`-> Solicitud POST en /api/productos/search con parámetros:`, searchParams);
+    const originalParams = req.body;
+    console.log(`-> Solicitud POST en /api/productos/search con parámetros:`, originalParams);
 
+    // Crear una copia del objeto para no modificar el original
+    const searchParams = { ...originalParams };
+    
     // Extraer max_results si existe
-    const maxResults = searchParams ? searchParams.max_results : null;
-    if (searchParams && searchParams.max_results) {
-        delete searchParams.max_results; // Remover del objeto para que no interfiera con la búsqueda
-    }
+    const maxResults = searchParams.max_results;
+    delete searchParams.max_results; // Remover del objeto para que no interfiera con la búsqueda
 
     // Si no hay parámetros, devolver todos los productos
     if (!searchParams || Object.keys(searchParams).length === 0) {
@@ -331,11 +332,15 @@ export const searchProductos = async (req, res) => {
     let baseQuery = 'SELECT * FROM producto WHERE 1=1';
     const queryParams = [];
 
+    console.log('Parámetros después de remover max_results:', searchParams);
+
     // Construye la consulta dinámicamente
     for (const key in searchParams) {
         if (validFields[key]) {
             const fieldConfig = validFields[key];
             const value = searchParams[key];
+            
+            console.log(`Procesando campo: ${key} = ${value}`);
             
             if (key === 'ids' && Array.isArray(value)) {
                 // Manejo especial para array de IDs
@@ -386,6 +391,8 @@ export const searchProductos = async (req, res) => {
         });
     } catch (error) {
         console.error(`!!! ERROR EN EL CONTROLADOR [searchProductos]:`, error.message);
+        console.error(`Query que falló: ${baseQuery}`);
+        console.error(`Parámetros que fallaron: [${queryParams.join(', ')}]`);
         res.status(500).json({
             status: 'error',
             message: 'Error interno del servidor al buscar los productos.'
