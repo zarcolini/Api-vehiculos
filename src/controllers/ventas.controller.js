@@ -1,3 +1,4 @@
+
 import { db } from '../db.js';
 
 export const getVentas = async (req, res) => {
@@ -136,41 +137,6 @@ export const searchVentas = async (req, res) => {
         res.status(500).json({
             status: 'error',
             message: 'Error interno del servidor al buscar las ventas.'
-        });
-    }
-};
-
-/**
- * @description Obtiene la lista de todas las tablas disponibles en la base de datos.
- * @param {import('express').Request} req Objeto de solicitud de Express.
- * @param {import('express').Response} res Objeto de respuesta de Express.
- */
-export const getTables = async (req, res) => {
-    console.log("-> Solicitud GET en /api/tables. Consultando tablas de la base de datos...");
-    
-    try {
-        // Consulta para obtener todas las tablas de la base de datos actual
-        const [rows] = await db.execute('SHOW TABLES');
-        
-        // Extraer solo los nombres de las tablas del resultado
-        const tableNames = rows.map(row => Object.values(row)[0]);
-        
-        console.log(`Número de tablas encontradas: ${tableNames.length}`);
-        console.log(`Tablas: ${tableNames.join(', ')}`);
-        
-        res.status(200).json({
-            status: 'success',
-            count: tableNames.length,
-            data: {
-                tables: tableNames,
-                details: rows
-            }
-        });
-    } catch (error) {
-        console.error("!!! ERROR EN EL CONTROLADOR [getTables]:", error.message);
-        res.status(500).json({
-            status: 'error',
-            message: 'Error interno del servidor al obtener las tablas de la base de datos.'
         });
     }
 };

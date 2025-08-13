@@ -1,6 +1,6 @@
 // src/routes/ventas.routes.js
 import { Router } from 'express';
-import { getVentas, getVentaById, createVenta, searchVentas, getTables } from '../controllers/ventas.controller.js';
+import { getVentas, getVentaById, createVenta, searchVentas } from '../controllers/ventas.controller.js';
 
 const router = Router();
 
@@ -25,9 +25,6 @@ const bearerTokenAuth = (req, res, next) => {
 router.use(bearerTokenAuth);
 
 // --- Rutas ---
-
-// GET para obtener todas las tablas de la base de datos
-router.get('/tables', getTables);
 
 // GET para obtener todas las ventas
 router.get('/ventas', getVentas);
