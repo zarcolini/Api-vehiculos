@@ -1,10 +1,10 @@
 // src/controllers/ventas.controller.js
-import { db } from '../db.js';
+import { query } from '../db.js';
 
 export const getVentas = async (req, res) => {
     console.log("-> Solicitud GET en /api/ventas. Consultando la base de datos...");
     try {
-        const [rows] = await db.execute('SELECT * FROM ventas');
+        const rows = await query('SELECT * FROM ventas');
         console.log(`Número de registros encontrados: ${rows.length}`);
         res.status(200).json({ 
             status: 'success', 
@@ -32,7 +32,7 @@ export const getVentaById = async (req, res) => {
     }
     
     try {
-        const [rows] = await db.execute('SELECT * FROM ventas WHERE id = ?', [id]);
+        const rows = await query('SELECT * FROM ventas WHERE id = ?', [id]);
         
         if (rows.length === 0) {
             return res.status(404).json({ 
@@ -118,7 +118,7 @@ export const searchVentas = async (req, res) => {
     console.log(`Parámetros: [${queryParams.join(', ')}]`);
 
     try {
-        const [rows] = await db.execute(baseQuery, queryParams);
+        const rows = await query(baseQuery, queryParams);
 
         if (rows.length === 0) {
             return res.status(404).json({
