@@ -9,12 +9,29 @@ export const searchVentas = async (req, res) => {
     const searchParams = req.body;
     console.log(`-> Solicitud POST en /api/ventas/search con parámetros:`, searchParams);
 
+    // Si no hay parámetros, devolver todas las ventas
     if (!searchParams || Object.keys(searchParams).length === 0) {
-        return res.status(400).json({
-            status: 'fail',
-            message: 'Se requiere al menos un parámetro de búsqueda en el cuerpo de la solicitud.'
-        });
+        console.log("Sin parámetros de búsqueda, devolviendo todas las ventas...");
+        try {
+            const [rows] = await db.execute('SELECT * FROM ventas ORDER BY id DESC');
+            return res.status(200).json({
+                status: 'success',
+                count: rows.length,
+                data: rows,
+                message: 'Todas las ventas (sin filtros aplicados)'
+            });
+        } catch (error) {
+            console.error("!!! ERROR AL OBTENER TODAS LAS VENTAS:", error.message);
+            return res.status(500).json({
+                status: 'error',
+                message: 'Error interno del servidor al obtener las ventas.'
+            });
+        }
     }
+
+    // Extraer max_results si existe
+    const maxResults = searchParams.max_results;
+    delete searchParams.max_results; // Remover del objeto para que no interfiera con la búsqueda
 
     // Mapeo de campos permitidos para MariaDB
     const validFields = {
@@ -54,6 +71,16 @@ export const searchVentas = async (req, res) => {
         }
     }
     
+    // Agregar ordenamiento
+    baseQuery += ' ORDER BY id DESC';
+    
+    // Agregar límite si se especifica
+    if (maxResults && !isNaN(maxResults) && maxResults > 0) {
+        baseQuery += ' LIMIT ?';
+        queryParams.push(parseInt(maxResults));
+        console.log(`Aplicando límite de ${maxResults} resultados`);
+    }
+    
     console.log(`Consulta SQL a ejecutar: ${baseQuery}`);
     console.log(`Parámetros: [${queryParams.join(', ')}]`);
 
@@ -70,7 +97,9 @@ export const searchVentas = async (req, res) => {
         res.status(200).json({
             status: 'success',
             count: rows.length,
-            data: rows
+            data: rows,
+            limited: maxResults ? true : false,
+            max_results_applied: maxResults || null
         });
     } catch (error) {
         console.error(`!!! ERROR EN EL CONTROLADOR [searchVentas]:`, error.message);
@@ -207,16 +236,34 @@ export const searchProductos = async (req, res) => {
     const searchParams = req.body;
     console.log(`-> Solicitud POST en /api/productos/search con parámetros:`, searchParams);
 
+    // Extraer max_results si existe
+    const maxResults = searchParams ? searchParams.max_results : null;
+    if (searchParams && searchParams.max_results) {
+        delete searchParams.max_results; // Remover del objeto para que no interfiera con la búsqueda
+    }
+
     // Si no hay parámetros, devolver todos los productos
     if (!searchParams || Object.keys(searchParams).length === 0) {
         console.log("Sin parámetros de búsqueda, devolviendo todos los productos...");
         try {
-            const [rows] = await db.execute('SELECT * FROM producto');
+            let query = 'SELECT * FROM producto ORDER BY id DESC';
+            const queryParams = [];
+            
+            // Agregar límite si se especifica
+            if (maxResults && !isNaN(maxResults) && maxResults > 0) {
+                query += ' LIMIT ?';
+                queryParams.push(parseInt(maxResults));
+                console.log(`Aplicando límite de ${maxResults} resultados`);
+            }
+            
+            const [rows] = await db.execute(query, queryParams);
             return res.status(200).json({
                 status: 'success',
                 count: rows.length,
                 data: rows,
-                message: 'Todos los productos (sin filtros aplicados)'
+                message: 'Todos los productos (sin filtros aplicados)',
+                limited: maxResults ? true : false,
+                max_results_applied: maxResults || null
             });
         } catch (error) {
             console.error("!!! ERROR AL OBTENER TODOS LOS PRODUCTOS:", error.message);
@@ -307,6 +354,16 @@ export const searchProductos = async (req, res) => {
         }
     }
     
+    // Agregar ordenamiento
+    baseQuery += ' ORDER BY id DESC';
+    
+    // Agregar límite si se especifica
+    if (maxResults && !isNaN(maxResults) && maxResults > 0) {
+        baseQuery += ' LIMIT ?';
+        queryParams.push(parseInt(maxResults));
+        console.log(`Aplicando límite de ${maxResults} resultados`);
+    }
+    
     console.log(`Consulta SQL a ejecutar: ${baseQuery}`);
     console.log(`Parámetros: [${queryParams.join(', ')}]`);
 
@@ -323,7 +380,9 @@ export const searchProductos = async (req, res) => {
         res.status(200).json({
             status: 'success',
             count: rows.length,
-            data: rows
+            data: rows,
+            limited: maxResults ? true : false,
+            max_results_applied: maxResults || null
         });
     } catch (error) {
         console.error(`!!! ERROR EN EL CONTROLADOR [searchProductos]:`, error.message);
@@ -342,6 +401,10 @@ export const searchProductos = async (req, res) => {
 export const getProductosDisponibles = async (req, res) => {
     const filters = req.body || {};
     console.log("-> Solicitud POST en /api/productos/disponibles con filtros:", filters);
+    
+    // Extraer max_results si existe
+    const maxResults = filters.max_results;
+    delete filters.max_results; // Remover del objeto para que no interfiera con la búsqueda
     
     try {
         let baseQuery = `
@@ -384,7 +447,14 @@ export const getProductosDisponibles = async (req, res) => {
             queryParams.push(filters.precio_venta_maximo);
         }
         
-        baseQuery += ` ORDER BY p.id`;
+        baseQuery += ` ORDER BY p.id DESC`;
+        
+        // Agregar límite si se especifica
+        if (maxResults && !isNaN(maxResults) && maxResults > 0) {
+            baseQuery += ' LIMIT ?';
+            queryParams.push(parseInt(maxResults));
+            console.log(`Aplicando límite de ${maxResults} resultados`);
+        }
         
         const [rows] = await db.execute(baseQuery, queryParams);
         
@@ -394,7 +464,9 @@ export const getProductosDisponibles = async (req, res) => {
             status: 'success',
             count: rows.length,
             data: rows,
-            message: 'Productos disponibles para venta (no vendidos, habilitados, no congelados)'
+            message: 'Productos disponibles para venta (no vendidos, habilitados, no congelados)',
+            limited: maxResults ? true : false,
+            max_results_applied: maxResults || null
         });
     } catch (error) {
         console.error("!!! ERROR EN EL CONTROLADOR [getProductosDisponibles]:", error.message);
@@ -413,6 +485,10 @@ export const getProductosDisponibles = async (req, res) => {
 export const getProductosVendidos = async (req, res) => {
     const filters = req.body || {};
     console.log("-> Solicitud POST en /api/productos/vendidos con filtros:", filters);
+    
+    // Extraer max_results si existe
+    const maxResults = filters.max_results;
+    delete filters.max_results; // Remover del objeto para que no interfiera con la búsqueda
     
     try {
         let baseQuery = `
@@ -452,6 +528,13 @@ export const getProductosVendidos = async (req, res) => {
         
         baseQuery += ` ORDER BY v.fecha_venta DESC`;
         
+        // Agregar límite si se especifica
+        if (maxResults && !isNaN(maxResults) && maxResults > 0) {
+            baseQuery += ' LIMIT ?';
+            queryParams.push(parseInt(maxResults));
+            console.log(`Aplicando límite de ${maxResults} resultados`);
+        }
+        
         const [rows] = await db.execute(baseQuery, queryParams);
         
         console.log(`Productos vendidos encontrados: ${rows.length}`);
@@ -460,7 +543,9 @@ export const getProductosVendidos = async (req, res) => {
             status: 'success',
             count: rows.length,
             data: rows,
-            message: 'Productos que ya han sido vendidos'
+            message: 'Productos que ya han sido vendidos',
+            limited: maxResults ? true : false,
+            max_results_applied: maxResults || null
         });
     } catch (error) {
         console.error("!!! ERROR EN EL CONTROLADOR [getProductosVendidos]:", error.message);
@@ -486,6 +571,10 @@ export const getEstadoVentaProducto = async (req, res) => {
             message: 'Se requiere al menos un parámetro de búsqueda en el cuerpo de la solicitud.'
         });
     }
+
+    // Extraer max_results si existe
+    const maxResults = searchParams.max_results;
+    delete searchParams.max_results; // Remover del objeto para que no interfiera con la búsqueda
 
     // Mapeo de campos permitidos para búsqueda de estado
     const validFields = {
@@ -568,7 +657,14 @@ export const getEstadoVentaProducto = async (req, res) => {
         }
     }
 
-    baseQuery += ` ORDER BY p.id`;
+    baseQuery += ` ORDER BY p.id DESC`;
+    
+    // Agregar límite si se especifica
+    if (maxResults && !isNaN(maxResults) && maxResults > 0) {
+        baseQuery += ' LIMIT ?';
+        queryParams.push(parseInt(maxResults));
+        console.log(`Aplicando límite de ${maxResults} resultados`);
+    }
     
     console.log(`Consulta SQL a ejecutar: ${baseQuery}`);
     console.log(`Parámetros: [${queryParams.join(', ')}]`);
@@ -600,7 +696,9 @@ export const getEstadoVentaProducto = async (req, res) => {
             status: 'success',
             count: rows.length,
             data: resultados,
-            message: 'Estado de venta de productos encontrados'
+            message: 'Estado de venta de productos encontrados',
+            limited: maxResults ? true : false,
+            max_results_applied: maxResults || null
         });
     } catch (error) {
         console.error(`!!! ERROR EN EL CONTROLADOR [getEstadoVentaProducto]:`, error.message);
