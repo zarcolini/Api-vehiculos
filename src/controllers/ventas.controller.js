@@ -74,13 +74,12 @@ export const searchVentas = async (req, res) => {
     // Agregar ordenamiento
     baseQuery += ' ORDER BY id DESC';
     
-    // Agregar límite si se especifica - VALIDACIÓN MEJORADA
+    // Agregar límite si se especifica - SIN PLACEHOLDER PARA MARIADB
     if (maxResults) {
         const limitValue = Number(maxResults);
         if (limitValue > 0 && Number.isInteger(limitValue)) {
-            baseQuery += ' LIMIT ?';
-            queryParams.push(limitValue);
-            console.log(`Aplicando límite de ${limitValue} resultados`);
+            baseQuery += ` LIMIT ${limitValue}`;
+            console.log(`Aplicando límite de ${limitValue} resultados (sin placeholder)`);
         } else {
             console.log(`max_results inválido (${maxResults}), ignorando límite`);
         }
@@ -255,11 +254,13 @@ export const searchProductos = async (req, res) => {
             let query = 'SELECT * FROM producto ORDER BY id DESC';
             const queryParams = [];
             
-            // Agregar límite si se especifica - CORREGIR VALIDACIÓN
-            if (maxResults && Number(maxResults) > 0) {
-                query += ' LIMIT ?';
-                queryParams.push(Number(maxResults));
-                console.log(`Aplicando límite de ${maxResults} resultados`);
+            // Agregar límite si se especifica - SIN PLACEHOLDER PARA MARIADB
+            if (maxResults) {
+                const limitValue = Number(maxResults);
+                if (limitValue > 0 && Number.isInteger(limitValue)) {
+                    query += ` LIMIT ${limitValue}`;
+                    console.log(`Aplicando límite de ${limitValue} resultados (sin placeholder)`);
+                }
             }
             
             const [rows] = await db.execute(query, queryParams);
@@ -371,11 +372,13 @@ export const searchProductos = async (req, res) => {
     // Agregar ordenamiento
     baseQuery += ' ORDER BY id DESC';
     
-    // Agregar límite si se especifica - CORREGIR VALIDACIÓN
-    if (maxResults && Number(maxResults) > 0) {
-        baseQuery += ' LIMIT ?';
-        queryParams.push(Number(maxResults));
-        console.log(`Aplicando límite de ${maxResults} resultados`);
+    // Agregar límite si se especifica - SIN PLACEHOLDER PARA MARIADB
+    if (maxResults) {
+        const limitValue = Number(maxResults);
+        if (limitValue > 0 && Number.isInteger(limitValue)) {
+            baseQuery += ` LIMIT ${limitValue}`;
+            console.log(`Aplicando límite de ${limitValue} resultados (sin placeholder)`);
+        }
     }
     
     console.log(`Consulta SQL a ejecutar: ${baseQuery}`);
@@ -472,11 +475,13 @@ export const getProductosDisponibles = async (req, res) => {
         
         baseQuery += ` ORDER BY p.id DESC`;
         
-        // Agregar límite si se especifica - CORREGIR VALIDACIÓN
-        if (maxResults && Number(maxResults) > 0) {
-            baseQuery += ' LIMIT ?';
-            queryParams.push(Number(maxResults));
-            console.log(`Aplicando límite de ${maxResults} resultados`);
+        // Agregar límite si se especifica - SIN PLACEHOLDER PARA MARIADB
+        if (maxResults) {
+            const limitValue = Number(maxResults);
+            if (limitValue > 0 && Number.isInteger(limitValue)) {
+                baseQuery += ` LIMIT ${limitValue}`;
+                console.log(`Aplicando límite de ${limitValue} resultados (sin placeholder)`);
+            }
         }
         
         const [rows] = await db.execute(baseQuery, queryParams);
@@ -551,11 +556,13 @@ export const getProductosVendidos = async (req, res) => {
         
         baseQuery += ` ORDER BY v.fecha_venta DESC`;
         
-        // Agregar límite si se especifica - CORREGIR VALIDACIÓN
-        if (maxResults && Number(maxResults) > 0) {
-            baseQuery += ' LIMIT ?';
-            queryParams.push(Number(maxResults));
-            console.log(`Aplicando límite de ${maxResults} resultados`);
+        // Agregar límite si se especifica - SIN PLACEHOLDER PARA MARIADB
+        if (maxResults) {
+            const limitValue = Number(maxResults);
+            if (limitValue > 0 && Number.isInteger(limitValue)) {
+                baseQuery += ` LIMIT ${limitValue}`;
+                console.log(`Aplicando límite de ${limitValue} resultados (sin placeholder)`);
+            }
         }
         
         const [rows] = await db.execute(baseQuery, queryParams);
@@ -682,11 +689,13 @@ export const getEstadoVentaProducto = async (req, res) => {
 
     baseQuery += ` ORDER BY p.id DESC`;
     
-    // Agregar límite si se especifica - CORREGIR VALIDACIÓN
-    if (maxResults && Number(maxResults) > 0) {
-        baseQuery += ' LIMIT ?';
-        queryParams.push(Number(maxResults));
-        console.log(`Aplicando límite de ${maxResults} resultados`);
+    // Agregar límite si se especifica - SIN PLACEHOLDER PARA MARIADB
+    if (maxResults) {
+        const limitValue = Number(maxResults);
+        if (limitValue > 0 && Number.isInteger(limitValue)) {
+            baseQuery += ` LIMIT ${limitValue}`;
+            console.log(`Aplicando límite de ${limitValue} resultados (sin placeholder)`);
+        }
     }
     
     console.log(`Consulta SQL a ejecutar: ${baseQuery}`);
