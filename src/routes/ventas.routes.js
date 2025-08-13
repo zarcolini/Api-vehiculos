@@ -1,6 +1,16 @@
 // src/routes/ventas.routes.js
 import { Router } from 'express';
-import { getVentas, getVentaById, createVenta, searchVentas, getTables, getTableStructure } from '../controllers/ventas.controller.js';
+import { 
+    getVentas, 
+    getVentaById, 
+    createVenta, 
+    searchVentas, 
+    getTables, 
+    getTableStructure,
+    getProductos,
+    getProductoById,
+    searchProductos
+} from '../controllers/ventas.controller.js';
 
 const router = Router();
 
@@ -21,16 +31,18 @@ const bearerTokenAuth = (req, res, next) => {
     next();
 };
 
-// Aplicamos el middleware de seguridad a todas las rutas de ventas
+// Aplicamos el middleware de seguridad a todas las rutas
 router.use(bearerTokenAuth);
 
-// --- Rutas ---
+// --- Rutas de Sistema ---
 
 // GET para obtener todas las tablas de la base de datos
 router.get('/tables', getTables);
 
 // GET para obtener la estructura de una tabla específica
 router.get('/table-structure/:tableName', getTableStructure);
+
+// --- Rutas de Ventas ---
 
 // GET para obtener todas las ventas
 router.get('/ventas', getVentas);
@@ -41,7 +53,18 @@ router.get('/ventas/:id', getVentaById);
 // POST para simular la creación de una venta
 router.post('/ventas', createVenta);
 
-// POST para realizar una búsqueda dinámica en el cuerpo de la solicitud
+// POST para realizar una búsqueda dinámica en ventas
 router.post('/ventas/search', searchVentas);
+
+// --- Rutas de Productos ---
+
+// GET para obtener todos los productos
+router.get('/productos', getProductos);
+
+// GET para obtener un producto por ID
+router.get('/productos/:id', getProductoById);
+
+// POST para realizar una búsqueda dinámica en productos
+router.post('/productos/search', searchProductos);
 
 export default router;
