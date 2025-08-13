@@ -174,3 +174,69 @@ export const getTables = async (req, res) => {
         });
     }
 };
+
+/**
+ * @description Obtiene la estructura (campos, tipos, etc.) de una tabla específica.
+ * @param {import('express').Request} req Objeto de solicitud de Express.
+ * @param {import('express').Response} res Objeto de respuesta de Express.
+ */
+export const getTableStructure = async (req, res) => {
+    const { tableName } = req.params;
+    console.log(`-> Solicitud GET en /api/table-structure/${tableName}. Consultando estructura de la tabla...`);
+    
+    if (!tableName || tableName.trim() === '') {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'El nombre de la tabla es requerido.'
+        });
+    }
+    
+    try {
+        // Consulta para obtener la estructura de la tabla
+        const [rows] = await db.execute('DESCRIBE ??', [tableName]);
+        
+        if (rows.length === 0) {
+            return res.status(404).json({
+                status: 'fail',
+                message: `La tabla '${tableName}' no existe o no tiene columnas.`
+            });
+        }
+        
+        // Formatear la información de manera más legible
+        const tableInfo = rows.map(row => ({
+            field: row.Field,
+            type: row.Type,
+            null: row.Null,
+            key: row.Key,
+            default: row.Default,
+            extra: row.Extra
+        }));
+        
+        console.log(`Estructura de tabla '${tableName}' obtenida. Campos encontrados: ${rows.length}`);
+        
+        res.status(200).json({
+            status: 'success',
+            tableName: tableName,
+            fieldsCount: rows.length,
+            data: {
+                structure: tableInfo,
+                rawData: rows
+            }
+        });
+    } catch (error) {
+        console.error(`!!! ERROR EN EL CONTROLADOR [getTableStructure] para tabla '${tableName}':`, error.message);
+        
+        // Si el error es porque la tabla no existe
+        if (error.code === 'ER_NO_SUCH_TABLE') {
+            return res.status(404).json({
+                status: 'fail',
+                message: `La tabla '${tableName}' no existe en la base de datos.`
+            });
+        }
+        
+        res.status(500).json({
+            status: 'error',
+            message: 'Error interno del servidor al obtener la estructura de la tabla.'
+        });
+    }
+};

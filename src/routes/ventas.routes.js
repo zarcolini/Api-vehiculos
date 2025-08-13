@@ -1,6 +1,6 @@
 // src/routes/ventas.routes.js
 import { Router } from 'express';
-import { getVentas, getVentaById, createVenta, searchVentas, getTables } from '../controllers/ventas.controller.js';
+import { getVentas, getVentaById, createVenta, searchVentas, getTables, getTableStructure } from '../controllers/ventas.controller.js';
 
 const router = Router();
 
@@ -28,6 +28,9 @@ router.use(bearerTokenAuth);
 
 // GET para obtener todas las tablas de la base de datos
 router.get('/tables', getTables);
+
+// GET para obtener la estructura de una tabla específica
+router.get('/table-structure/:tableName', getTableStructure);
 
 // GET para obtener todas las ventas
 router.get('/ventas', getVentas);
