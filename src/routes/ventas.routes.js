@@ -1,15 +1,14 @@
 // src/routes/ventas.routes.js
 import { Router } from 'express';
 import { 
-    getVentas, 
-    getVentaById, 
-    createVenta, 
     searchVentas, 
     getTables, 
     getTableStructure,
-    getProductos,
-    getProductoById,
-    searchProductos
+    searchProductos,
+    getProductosDisponibles,
+    getProductosVendidos,
+    getEstadoVentaProducto,
+    getEstadisticasVentas
 } from '../controllers/ventas.controller.js';
 
 const router = Router();
@@ -36,35 +35,32 @@ router.use(bearerTokenAuth);
 
 // --- Rutas de Sistema ---
 
-// GET para obtener todas las tablas de la base de datos
+// GET para obtener todas las tablas de la base de datos (mantiene GET)
 router.get('/tables', getTables);
 
-// GET para obtener la estructura de una tabla específica
-router.get('/table-structure/:tableName', getTableStructure);
+// POST para obtener la estructura de una tabla específica (cambiado a JSON body)
+router.post('/table-structure', getTableStructure);
 
 // --- Rutas de Ventas ---
 
-// GET para obtener todas las ventas
-router.get('/ventas', getVentas);
-
-// GET para obtener una venta por ID en la URL
-router.get('/ventas/:id', getVentaById);
-
-// POST para simular la creación de una venta
-router.post('/ventas', createVenta);
-
-// POST para realizar una búsqueda dinámica en ventas
+// POST para realizar búsqueda de ventas con JSON (incluye obtener todas si no hay filtros)
 router.post('/ventas/search', searchVentas);
 
 // --- Rutas de Productos ---
 
-// GET para obtener todos los productos
-router.get('/productos', getProductos);
+// GET para obtener estadísticas de ventas (mantiene GET)
+router.get('/productos/estadisticas-ventas', getEstadisticasVentas);
 
-// GET para obtener un producto por ID
-router.get('/productos/:id', getProductoById);
+// POST para obtener productos disponibles con filtros opcionales
+router.post('/productos/disponibles', getProductosDisponibles);
 
-// POST para realizar una búsqueda dinámica en productos
+// POST para obtener productos vendidos con filtros opcionales
+router.post('/productos/vendidos', getProductosVendidos);
+
+// POST para verificar estado de venta con JSON
+router.post('/productos/estado-venta', getEstadoVentaProducto);
+
+// POST para realizar búsqueda de productos (incluye obtener todos si no hay filtros)
 router.post('/productos/search', searchProductos);
 
 export default router;
