@@ -1,0 +1,34 @@
+{
+  "name": "api-ventas-render",
+  "version": "1.0.0",
+  "description": "API de ventas para MariaDB desplegada en Render",
+  "type": "module",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js",
+    "build": "echo 'Build completed'"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "mysql2": "^3.6.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": [
+    "api",
+    "ventas",
+    "mariadb",
+    "express",
+    "render"
+  ],
+  "author": "Tu Nombre",
+  "license": "MIT"
+}
