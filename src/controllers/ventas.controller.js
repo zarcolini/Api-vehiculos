@@ -1,16 +1,41 @@
 import { db } from "../db.js";
 
+// Función helper para filtrar parámetros vacíos - AGREGAR AL INICIO
+const filterEmptyParams = (params) => {
+  const filtered = {};
+  
+  for (const [key, value] of Object.entries(params)) {
+    // Verificar si el valor no está vacío
+    if (value !== null && 
+        value !== undefined && 
+        value !== '' && 
+        !(Array.isArray(value) && value.length === 0) &&
+        value !== 'null' &&
+        value !== 'undefined') {
+      filtered[key] = value;
+    } else {
+      console.log(`Parámetro vacío ignorado: ${key} = ${value}`);
+    }
+  }
+  
+  return filtered;
+};
+
 /**
  * @description
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  */
 export const searchVentas = async (req, res) => {
-  const searchParams = req.body;
+  let searchParams = req.body;
   console.log(
     `-> Solicitud POST en /api/ventas/search con parámetros:`,
     searchParams
   );
+
+  // FILTRAR PARÁMETROS VACÍOS
+  searchParams = filterEmptyParams(searchParams);
+  console.log(`-> Parámetros después de filtrar vacíos:`, searchParams);
 
   if (!searchParams || Object.keys(searchParams).length === 0) {
     console.log("Sin parámetros de búsqueda, devolviendo todas las ventas...");
@@ -175,7 +200,12 @@ export const getTables = async (req, res) => {
  * @param {import('express').Response} res
  */
 export const getTableStructure = async (req, res) => {
-  const { tableName } = req.body;
+  let requestBody = req.body;
+  
+  // FILTRAR PARÁMETROS VACÍOS
+  requestBody = filterEmptyParams(requestBody);
+  
+  const { tableName } = requestBody;
   console.log(
     `-> Solicitud POST en /api/table-structure con tabla: ${tableName}`
   );
@@ -265,11 +295,15 @@ export const getTableStructure = async (req, res) => {
  * @param {import('express').Response} res
  */
 export const searchProductos = async (req, res) => {
-  const originalParams = req.body;
+  let originalParams = req.body;
   console.log(
     `-> Solicitud POST en /api/productos/search con parámetros:`,
     originalParams
   );
+
+  // FILTRAR PARÁMETROS VACÍOS
+  originalParams = filterEmptyParams(originalParams);
+  console.log(`-> Parámetros después de filtrar vacíos:`, originalParams);
 
   // Crear una copia del objeto para no modificar el original
   const searchParams = { ...originalParams };
@@ -473,11 +507,15 @@ export const searchProductos = async (req, res) => {
  * @param {import('express').Response} res Objeto de respuesta de Express.
  */
 export const getProductosDisponibles = async (req, res) => {
-  const filters = req.body || {};
+  let filters = req.body || {};
   console.log(
     "-> Solicitud POST en /api/productos/disponibles con filtros:",
     filters
   );
+
+  // FILTRAR PARÁMETROS VACÍOS
+  filters = filterEmptyParams(filters);
+  console.log("-> Filtros después de filtrar vacíos:", filters);
 
   // Extraer max_results si existe
   const maxResults = filters.max_results;
@@ -568,11 +606,15 @@ export const getProductosDisponibles = async (req, res) => {
  * @param {import('express').Response} res Objeto de respuesta de Express.
  */
 export const getProductosVendidos = async (req, res) => {
-  const filters = req.body || {};
+  let filters = req.body || {};
   console.log(
     "-> Solicitud POST en /api/productos/vendidos con filtros:",
     filters
   );
+
+  // FILTRAR PARÁMETROS VACÍOS
+  filters = filterEmptyParams(filters);
+  console.log("-> Filtros después de filtrar vacíos:", filters);
 
   // Extraer max_results si existe
   const maxResults = filters.max_results;
@@ -657,17 +699,21 @@ export const getProductosVendidos = async (req, res) => {
  * @param {import('express').Response} res Objeto de respuesta de Express.
  */
 export const getEstadoVentaProducto = async (req, res) => {
-  const searchParams = req.body;
+  let searchParams = req.body;
   console.log(
     `-> Solicitud POST en /api/productos/estado-venta con parámetros:`,
     searchParams
   );
 
+  // FILTRAR PARÁMETROS VACÍOS
+  searchParams = filterEmptyParams(searchParams);
+  console.log(`-> Parámetros después de filtrar vacíos:`, searchParams);
+
   if (!searchParams || Object.keys(searchParams).length === 0) {
     return res.status(400).json({
       status: "fail",
       message:
-        "Se requiere al menos un parámetro de búsqueda en el cuerpo de la solicitud.",
+        "Se requiere al menos un parámetro de búsqueda válido en el cuerpo de la solicitud.",
     });
   }
 
