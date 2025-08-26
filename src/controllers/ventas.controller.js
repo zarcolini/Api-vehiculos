@@ -71,9 +71,9 @@ export const searchVentas = async (req, res) => {
     id_estado: { column: "id_estado", operator: "=" },
     producto_id: { column: "id_producto", operator: "=" },
     productos_ids: { column: "id_producto", operator: "IN" },
-    fecha_venta: { column: "fecha_venta", operator: "=" },
-    fecha_desde: { column: "fecha_venta", operator: ">=" },
-    fecha_hasta: { column: "fecha_venta", operator: "<=" },
+    fecha_venta: { column: "fecha_vendido", operator: "=" },
+    fecha_desde: { column: "fecha_vendido", operator: ">=" },
+    fecha_hasta: { column: "fecha_vendido", operator: "<=" },
   };
 
   let baseQuery = "SELECT * FROM ventas WHERE 1=1";
