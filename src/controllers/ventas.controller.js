@@ -60,10 +60,18 @@ export const searchVentas = async (req, res) => {
       const fieldConfig = validFields[key];
       const value = searchParams[key];
 
-      if (key === "ids" && Array.isArray(value)) {
+      // Manejo especial para arrays (tanto ids como productos_ids)
+      if ((key === "ids" || key === "productos_ids") && Array.isArray(value)) {
+        // Validar que el array no esté vacío
+        if (value.length === 0) {
+          console.warn(`Array vacío para ${key}, ignorando campo`);
+          continue;
+        }
+
         const placeholders = value.map(() => "?").join(",");
         baseQuery += ` AND ${fieldConfig.column} IN (${placeholders})`;
         queryParams.push(...value);
+        console.log(`Array procesado para ${key}:`, value);
       } else {
         baseQuery += ` AND ${fieldConfig.column} ${fieldConfig.operator} ?`;
         queryParams.push(value);
