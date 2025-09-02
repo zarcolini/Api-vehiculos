@@ -72,8 +72,7 @@ export const searchVentas = async (req, res) => {
     id_estado: { column: "id_estado", operator: "=" },
     
     km: { column: "kilometraje", operator: "=" },
-    
-
+    id_tienda: { column: "id_tienda", operator: "=" },
     producto_id: { column: "id_producto", operator: "=" },
     productos_ids: { column: "id_producto", operator: "IN" },
     fecha_venta: { column: "fecha_vendido", operator: "=" },
