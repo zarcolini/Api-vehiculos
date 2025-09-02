@@ -62,7 +62,6 @@ export const searchVentas = async (req, res) => {
 
   // Mapeo de campos permitidos
   const validFields = {
-
     id: { column: "id", operator: "=" },
     ids: { column: "id", operator: "IN" }, // Para múltiples IDs
     precio: { column: "precio_venta", operator: "=" },
@@ -292,10 +291,9 @@ export const getTableStructure = async (req, res) => {
   }
 };
 
-//Endpoint de la tabla productos
-
 /**
  * @description Busca productos dinámicamente según los criterios proporcionados en el cuerpo de la solicitud.
+ * CON SOPORTE PARA FILTROS DE CAMPOS
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  */
@@ -315,15 +313,54 @@ export const searchProductos = async (req, res) => {
 
   // Extraer max_results si existe
   const maxResults = searchParams.max_results;
-  delete searchParams.max_results; // Remover del objeto para que no interfiera con la búsqueda
+  delete searchParams.max_results;
 
-  // Si no hay parámetros, devolver todos los productos
+  // NUEVA FUNCIONALIDAD: Extraer campos específicos
+  const requestedFields = searchParams.fields;
+  delete searchParams.fields; // Remover del objeto para que no interfiera con la búsqueda
+
+  // Campos válidos disponibles en la tabla producto
+  const availableFields = [
+    'id', 'codigo_alterno', 'nombre', 'codigo_grupo', 'habilitado', 
+    'congelado', 'item_compra', 'item_venta', 'item_inventario', 
+    'codigo_hertz', 'tipo', 'tipo_sap', 'marca', 'anio', 'modelo', 
+    'color', 'cilindrada', 'serie', 'motor', 'placa', 'tipo_vehiculo', 
+    'chasis', 'precio_costo', 'precio_venta', 'km', 'k5', 'k10', 
+    'k20', 'k40', 'k100', 'sincronizado', 'horas', 'tipo_mant', 'clase'
+  ];
+
+  // Determinar qué campos seleccionar
+  let selectedFields = '*'; // Por defecto todos los campos
+  
+  if (requestedFields && Array.isArray(requestedFields) && requestedFields.length > 0) {
+    // Validar que los campos solicitados existen
+    const validRequestedFields = requestedFields.filter(field => 
+      availableFields.includes(field)
+    );
+    
+    const invalidFields = requestedFields.filter(field => 
+      !availableFields.includes(field)
+    );
+    
+    if (invalidFields.length > 0) {
+      console.warn(`Campos inválidos ignorados: ${invalidFields.join(', ')}`);
+    }
+    
+    if (validRequestedFields.length > 0) {
+      selectedFields = validRequestedFields.join(', ');
+      console.log(`Campos seleccionados: ${selectedFields}`);
+    } else {
+      console.warn('Ningún campo válido especificado, usando todos los campos');
+    }
+  }
+
+  // Si no hay parámetros de búsqueda, devolver todos los productos
   if (!searchParams || Object.keys(searchParams).length === 0) {
     console.log(
       "Sin parámetros de búsqueda, devolviendo todos los productos..."
     );
     try {
-      let query = "SELECT * FROM producto ORDER BY id DESC";
+      let query = `SELECT ${selectedFields} FROM producto ORDER BY id DESC`;
       const queryParams = [];
 
       if (maxResults) {
@@ -331,7 +368,7 @@ export const searchProductos = async (req, res) => {
         if (limitValue > 0 && Number.isInteger(limitValue)) {
           query += ` LIMIT ${limitValue}`;
           console.log(
-            `Aplicando límite de ${limitValue} resultados (sin placeholder)`
+            `Aplicando límite de ${limitValue} resultados`
           );
         }
       }
@@ -344,6 +381,7 @@ export const searchProductos = async (req, res) => {
         message: "Todos los productos (sin filtros aplicados)",
         limited: maxResults ? true : false,
         max_results_applied: maxResults || null,
+        fields_selected: selectedFields === '*' ? 'all' : requestedFields
       });
     } catch (error) {
       console.error("!!! ERROR AL OBTENER TODOS LOS PRODUCTOS:", error.message);
@@ -408,11 +446,12 @@ export const searchProductos = async (req, res) => {
     clase: { column: "clase", operator: "LIKE" },
   };
 
-  let baseQuery = "SELECT * FROM producto WHERE 1=1";
+  let baseQuery = `SELECT ${selectedFields} FROM producto WHERE 1=1`;
   const queryParams = [];
 
-  console.log("Parámetros después de remover max_results:", searchParams);
+  console.log("Parámetros después de remover max_results y fields:", searchParams);
   console.log("maxResults extraído:", maxResults);
+  console.log("Campos solicitados:", requestedFields);
 
   // Construye la consulta dinámicamente
   for (const key in searchParams) {
@@ -449,13 +488,13 @@ export const searchProductos = async (req, res) => {
   // Agregar ordenamiento
   baseQuery += " ORDER BY id DESC";
 
-  // Agregar límite si se especifica - SIN PLACEHOLDER PARA MARIADB
+  // Agregar límite si se especifica
   if (maxResults) {
     const limitValue = Number(maxResults);
     if (limitValue > 0 && Number.isInteger(limitValue)) {
       baseQuery += ` LIMIT ${limitValue}`;
       console.log(
-        `Aplicando límite de ${limitValue} resultados (sin placeholder)`
+        `Aplicando límite de ${limitValue} resultados`
       );
     }
   }
@@ -486,6 +525,8 @@ export const searchProductos = async (req, res) => {
       data: rows,
       limited: maxResults ? true : false,
       max_results_applied: maxResults || null,
+      fields_selected: selectedFields === '*' ? 'all' : requestedFields,
+      available_fields: availableFields
     });
   } catch (error) {
     console.error(
