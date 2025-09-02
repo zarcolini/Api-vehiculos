@@ -62,6 +62,7 @@ export const searchVentas = async (req, res) => {
 
   // Mapeo de campos permitidos
   const validFields = {
+
     id: { column: "id", operator: "=" },
     ids: { column: "id", operator: "IN" }, // Para múltiples IDs
     precio: { column: "precio_venta", operator: "=" },
@@ -69,10 +70,15 @@ export const searchVentas = async (req, res) => {
     precio_maximo: { column: "precio_venta", operator: "<=" },
     trasmision: { column: "trasmision", operator: "=" },
     id_estado: { column: "id_estado", operator: "=" },
+    
+    km: { column: "kilometraje", operator: "=" },
+    
+
     producto_id: { column: "id_producto", operator: "=" },
     productos_ids: { column: "id_producto", operator: "IN" },
     fecha_venta: { column: "fecha_vendido", operator: "=" },
     fecha_desde: { column: "fecha_vendido", operator: ">=" },
+    fecha_distinto: { column: "fecha_vendido", operator: "!=" },
     fecha_hasta: { column: "fecha_vendido", operator: "<=" },
   };
 
