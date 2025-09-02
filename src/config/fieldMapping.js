@@ -1,3 +1,4 @@
+
 export const PRODUCTO_AVAILABLE_FIELDS = [
   'id', 'codigo_alterno', 'nombre', 'codigo_grupo', 'habilitado', 
   'congelado', 'item_compra', 'item_venta', 'item_inventario', 
@@ -61,7 +62,14 @@ export const PRODUCTO_VALID_FIELDS = {
   clase: { column: "clase", operator: "LIKE" },
 };
 
-// Mapeo de campos válidos para búsqueda de ventas
+
+
+export const VENTAS_AVAILABLE_FIELDS = [
+  'id', 'id_producto', 'precio_venta', 'kilometraje', 'trasmision', 
+  'id_estado', 'id_tienda', 'fecha_vendido', 'fecha_creacion', 
+  'usuario_creacion', 'fecha_modificacion', 'usuario_modificacion'
+];
+
 export const VENTAS_VALID_FIELDS = {
   id: { column: "id", operator: "=" },
   ids: { column: "id", operator: "IN" },
@@ -78,4 +86,103 @@ export const VENTAS_VALID_FIELDS = {
   fecha_desde: { column: "fecha_vendido", operator: ">=" },
   fecha_distinto: { column: "fecha_vendido", operator: "!=" },
   fecha_hasta: { column: "fecha_vendido", operator: "<=" },
+};
+
+
+export const ESTADOS_AVAILABLE_FIELDS = [
+  'id', 'nombre', 'foto', 'envio_correo', 'ventas_reparacion'
+];
+
+export const ESTADOS_VALID_FIELDS = {
+  id: { column: "id", operator: "=" },
+  ids: { column: "id", operator: "IN" },
+  nombre: { column: "nombre", operator: "LIKE" },
+  envio_correo: { column: "envio_correo", operator: "=" },
+  ventas_reparacion: { column: "ventas_reparacion", operator: "=" },
+};
+/**
+ * Obtiene los campos disponibles para una tabla específica
+ * @param {string} tableName - Nombre de la tabla
+ * @returns {Array} - Array de campos disponibles
+ */
+export const getAvailableFields = (tableName) => {
+  const fieldMappings = {
+    'producto': PRODUCTO_AVAILABLE_FIELDS,
+    'ventas': VENTAS_AVAILABLE_FIELDS,
+    'estados': ESTADOS_AVAILABLE_FIELDS
+  };
+  
+  return fieldMappings[tableName] || [];
+};
+
+/**
+ * Obtiene los campos válidos para búsqueda de una tabla específica
+ * @param {string} tableName - Nombre de la tabla
+ * @returns {Object} - Objeto con mapeo de campos válidos
+ */
+export const getValidFields = (tableName) => {
+  const validMappings = {
+    'producto': PRODUCTO_VALID_FIELDS,
+    'ventas': VENTAS_VALID_FIELDS,
+    'estados': ESTADOS_VALID_FIELDS
+  };
+  
+  return validMappings[tableName] || {};
+};
+
+/**
+ * Valida si un campo existe en los campos disponibles de una tabla
+ * @param {string} tableName - Nombre de la tabla
+ * @param {string} fieldName - Nombre del campo
+ * @returns {boolean} - Si el campo es válido
+ */
+export const isValidField = (tableName, fieldName) => {
+  const availableFields = getAvailableFields(tableName);
+  return availableFields.includes(fieldName);
+};
+
+/**
+ * Obtiene todos los operadores únicos usados en los mapeos
+ * @returns {Array} - Array de operadores únicos
+ */
+export const getAllOperators = () => {
+  const allFields = {
+    ...PRODUCTO_VALID_FIELDS,
+    ...VENTAS_VALID_FIELDS,
+    ...ESTADOS_VALID_FIELDS
+  };
+  
+  const operators = new Set();
+  Object.values(allFields).forEach(field => {
+    if (field.operator) {
+      operators.add(field.operator);
+    }
+  });
+  
+  return Array.from(operators);
+};
+
+/**
+ * Obtiene estadísticas de los field mappings
+ * @returns {Object} - Estadísticas de los mapeos
+ */
+export const getFieldMappingStats = () => {
+  return {
+    tablas: {
+      producto: {
+        campos_disponibles: PRODUCTO_AVAILABLE_FIELDS.length,
+        campos_buscables: Object.keys(PRODUCTO_VALID_FIELDS).length
+      },
+      ventas: {
+        campos_disponibles: VENTAS_AVAILABLE_FIELDS.length,
+        campos_buscables: Object.keys(VENTAS_VALID_FIELDS).length
+      },
+      estados: {
+        campos_disponibles: ESTADOS_AVAILABLE_FIELDS.length,
+        campos_buscables: Object.keys(ESTADOS_VALID_FIELDS).length
+      }
+    },
+    operadores_disponibles: getAllOperators(),
+    total_tablas: 3
+  };
 };
