@@ -1,6 +1,6 @@
 import { db } from "../db.js";
 import { filterEmptyParams, processFieldSelection, processLimit } from '../utils/helpers.js';
-import { PRODUCTO_AVAILABLE_FIELDS, PRODUCTO_VALID_FIELDS } from '../config/fieldMappings.js';
+import { PRODUCTO_AVAILABLE_FIELDS, PRODUCTO_VALID_FIELDS } from '../config/fieldMapping.js';
 import { buildDynamicQuery } from '../services/queryBuilder.js';
 
 

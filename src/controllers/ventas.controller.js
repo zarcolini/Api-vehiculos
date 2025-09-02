@@ -1,6 +1,6 @@
 import { db } from "../db.js";
 import { filterEmptyParams, processLimit, processFieldSelection } from '../utils/helpers.js';
-import { VENTAS_VALID_FIELDS } from '../config/fieldMappings.js';
+import { VENTAS_VALID_FIELDS } from '../config/fieldMapping.js';
 import { buildDynamicQuery } from '../services/queryBuilder.js';
 
 // Campos disponibles en la tabla ventas - AGREGAR ESTO
