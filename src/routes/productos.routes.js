@@ -4,7 +4,7 @@ import {
   getProductosDisponibles,
   getProductosVendidos,
   getEstadoVentaProducto 
-} from '../controllers/productosController.js';
+} from '../controllers/productos.controller.js';
 
 const router = express.Router();
 

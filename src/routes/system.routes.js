@@ -1,5 +1,5 @@
 import express from 'express';
-import { getTables, getTableStructure } from '../controllers/systemController.js';
+import { getTables, getTableStructure } from '../controllers/system.controller.js';
 
 const router = express.Router();
 
