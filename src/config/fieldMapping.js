@@ -35,7 +35,7 @@ export const PRODUCTO_AVAILABLE_FIELDS = [
   "clase",
 ];
 export const PRODUCTO_VALID_FIELDS = {
-  // Identificación
+  
   id: { column: "id", operator: "=" },
   ids: { column: "id", operator: "IN" },
   codigo_alterno: { column: "codigo_alterno", operator: "LIKE" },
