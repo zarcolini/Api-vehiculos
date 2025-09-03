@@ -34,8 +34,6 @@ export const PRODUCTO_AVAILABLE_FIELDS = [
   "tipo_mant",
   "clase",
 ];
-
-// Mapeo de campos válidos para búsqueda de productos
 export const PRODUCTO_VALID_FIELDS = {
   // Identificación
   id: { column: "id", operator: "=" },
