@@ -1,6 +1,6 @@
 import { db } from "../db.js";
 import { filterEmptyParams, processFieldSelection, processLimit } from '../utils/helpers.js';
-import { VENTAS_VALID_FIELDS, VENTAS_AVAILABLE_FIELDS } from '../config/fieldMappings.js';
+import { VENTAS_VALID_FIELDS, VENTAS_AVAILABLE_FIELDS } from '../config/fieldMapping.js';
 import { buildDynamicQuery } from '../services/queryBuilder.js';
 
 /**
