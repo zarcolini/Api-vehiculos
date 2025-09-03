@@ -1,11 +1,38 @@
-
 export const PRODUCTO_AVAILABLE_FIELDS = [
-  'id', 'codigo_alterno', 'nombre', 'codigo_grupo', 'habilitado', 
-  'congelado', 'item_compra', 'item_venta', 'item_inventario', 
-  'codigo_hertz', 'tipo', 'tipo_sap', 'marca', 'anio', 'modelo', 
-  'color', 'cilindrada', 'serie', 'motor', 'placa', 'tipo_vehiculo', 
-  'chasis', 'precio_costo', 'precio_venta', 'km', 'k5', 'k10', 
-  'k20', 'k40', 'k100', 'sincronizado', 'horas', 'tipo_mant', 'clase'
+  "id",
+  "codigo_alterno",
+  "nombre",
+  "codigo_grupo",
+  "habilitado",
+  "congelado",
+  "item_compra",
+  "item_venta",
+  "item_inventario",
+  "codigo_hertz",
+  "tipo",
+  "tipo_sap",
+  "marca",
+  "anio",
+  "modelo",
+  "color",
+  "cilindrada",
+  "serie",
+  "motor",
+  "placa",
+  "tipo_vehiculo",
+  "chasis",
+  "precio_costo",
+  "precio_venta",
+  "km",
+  "k5",
+  "k10",
+  "k20",
+  "k40",
+  "k100",
+  "sincronizado",
+  "horas",
+  "tipo_mant",
+  "clase",
 ];
 
 // Mapeo de campos válidos para búsqueda de productos
@@ -62,35 +89,98 @@ export const PRODUCTO_VALID_FIELDS = {
   clase: { column: "clase", operator: "LIKE" },
 };
 
-
-
 export const VENTAS_AVAILABLE_FIELDS = [
-  'id', 'id_producto', 'precio_venta', 'kilometraje', 'trasmision', 
-  'id_estado', 'id_tienda', 'fecha_vendido', 'fecha_creacion', 
-  'usuario_creacion', 'fecha_modificacion', 'usuario_modificacion'
-];
+  // Campos básicos
+  "id",
+  "numero",
+  "id_usuario",
+  "id_tienda",
+  "id_estado",
+  "id_producto",
 
+  // Información del vehículo
+  "kilometraje",
+  "cilindraje",
+  "trasmision",
+
+  // Precios
+  "precio_minimo",
+  "precio_maximo",
+  "precio_venta",
+
+  // Fechas y tiempos
+  "fecha",
+  "hora",
+  "fecha_vendido",
+  "fecha_negociacion",
+  "fecha_asignacion",
+  "fecha_reparacion_completada",
+  "fecha_promesa",
+
+  // Personal involucrado
+  "id_vendedor",
+  "id_televentas",
+
+  // Documentación
+  "id_impuesto",
+  "id_factura",
+  "foto",
+
+  // Inspección y reparación
+  "id_inspeccion",
+  "id_estado_pintura",
+  "id_estado_interior",
+  "id_estado_mecanica",
+  "tipo_ventas_reparacion",
+  "reproceso",
+
+  // Observaciones
+  "observaciones",
+  "observaciones_reparacion",
+
+  // Auditoría (los que ya tenías)
+  "fecha_creacion",
+  "usuario_creacion",
+  "fecha_modificacion",
+  "usuario_modificacion",
+];
 export const VENTAS_VALID_FIELDS = {
+  // Campos existentes (mantener)
   id: { column: "id", operator: "=" },
   ids: { column: "id", operator: "IN" },
-  precio: { column: "precio_venta", operator: "=" },
-  precio_minimo: { column: "precio_venta", operator: ">=" },
-  precio_maximo: { column: "precio_venta", operator: "<=" },
-  trasmision: { column: "trasmision", operator: "=" },
-  id_estado: { column: "id_estado", operator: "=" },
-  km: { column: "kilometraje", operator: "=" },
-  id_tienda: { column: "id_tienda", operator: "=" },
   producto_id: { column: "id_producto", operator: "=" },
   productos_ids: { column: "id_producto", operator: "IN" },
-  fecha_venta: { column: "fecha_vendido", operator: "=" },
-  fecha_desde: { column: "fecha_vendido", operator: ">=" },
-  fecha_distinto: { column: "fecha_vendido", operator: "!=" },
-  fecha_hasta: { column: "fecha_vendido", operator: "<=" },
+
+  // Agregar nuevos campos de búsqueda
+  numero: { column: "numero", operator: "=" },
+  id_usuario: { column: "id_usuario", operator: "=" },
+  id_tienda: { column: "id_tienda", operator: "=" },
+  id_estado: { column: "id_estado", operator: "=" },
+  id_vendedor: { column: "id_vendedor", operator: "=" },
+
+  // Precios
+  precio_venta: { column: "precio_venta", operator: "=" },
+  precio_minimo: { column: "precio_minimo", operator: ">=" },
+  precio_maximo: { column: "precio_maximo", operator: "<=" },
+
+  // Fechas
+  fecha: { column: "fecha", operator: "=" },
+  fecha_desde: { column: "fecha", operator: ">=" },
+  fecha_hasta: { column: "fecha", operator: "<=" },
+  fecha_vendido: { column: "fecha_vendido", operator: "=" },
+
+  // Otros
+  trasmision: { column: "trasmision", operator: "=" },
+  kilometraje: { column: "kilometraje", operator: "=" },
+  tipo_ventas_reparacion: { column: "tipo_ventas_reparacion", operator: "=" },
 };
 
-
 export const ESTADOS_AVAILABLE_FIELDS = [
-  'id', 'nombre', 'foto', 'envio_correo', 'ventas_reparacion'
+  "id",
+  "nombre",
+  "foto",
+  "envio_correo",
+  "ventas_reparacion",
 ];
 
 export const ESTADOS_VALID_FIELDS = {
@@ -107,11 +197,11 @@ export const ESTADOS_VALID_FIELDS = {
  */
 export const getAvailableFields = (tableName) => {
   const fieldMappings = {
-    'producto': PRODUCTO_AVAILABLE_FIELDS,
-    'ventas': VENTAS_AVAILABLE_FIELDS,
-    'estados': ESTADOS_AVAILABLE_FIELDS
+    producto: PRODUCTO_AVAILABLE_FIELDS,
+    ventas: VENTAS_AVAILABLE_FIELDS,
+    estados: ESTADOS_AVAILABLE_FIELDS,
   };
-  
+
   return fieldMappings[tableName] || [];
 };
 
@@ -122,11 +212,11 @@ export const getAvailableFields = (tableName) => {
  */
 export const getValidFields = (tableName) => {
   const validMappings = {
-    'producto': PRODUCTO_VALID_FIELDS,
-    'ventas': VENTAS_VALID_FIELDS,
-    'estados': ESTADOS_VALID_FIELDS
+    producto: PRODUCTO_VALID_FIELDS,
+    ventas: VENTAS_VALID_FIELDS,
+    estados: ESTADOS_VALID_FIELDS,
   };
-  
+
   return validMappings[tableName] || {};
 };
 
@@ -149,16 +239,16 @@ export const getAllOperators = () => {
   const allFields = {
     ...PRODUCTO_VALID_FIELDS,
     ...VENTAS_VALID_FIELDS,
-    ...ESTADOS_VALID_FIELDS
+    ...ESTADOS_VALID_FIELDS,
   };
-  
+
   const operators = new Set();
-  Object.values(allFields).forEach(field => {
+  Object.values(allFields).forEach((field) => {
     if (field.operator) {
       operators.add(field.operator);
     }
   });
-  
+
   return Array.from(operators);
 };
 
@@ -171,18 +261,18 @@ export const getFieldMappingStats = () => {
     tablas: {
       producto: {
         campos_disponibles: PRODUCTO_AVAILABLE_FIELDS.length,
-        campos_buscables: Object.keys(PRODUCTO_VALID_FIELDS).length
+        campos_buscables: Object.keys(PRODUCTO_VALID_FIELDS).length,
       },
       ventas: {
         campos_disponibles: VENTAS_AVAILABLE_FIELDS.length,
-        campos_buscables: Object.keys(VENTAS_VALID_FIELDS).length
+        campos_buscables: Object.keys(VENTAS_VALID_FIELDS).length,
       },
       estados: {
         campos_disponibles: ESTADOS_AVAILABLE_FIELDS.length,
-        campos_buscables: Object.keys(ESTADOS_VALID_FIELDS).length
-      }
+        campos_buscables: Object.keys(ESTADOS_VALID_FIELDS).length,
+      },
     },
     operadores_disponibles: getAllOperators(),
-    total_tablas: 3
+    total_tablas: 3,
   };
 };
