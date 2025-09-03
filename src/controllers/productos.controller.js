@@ -19,13 +19,12 @@ export const searchProductos = async (req, res) => {
 
   const searchParams = { ...originalParams };
 
-  // Extraer parámetros especiales
   const maxResults = searchParams.max_results;
   const requestedFields = searchParams.fields;
   delete searchParams.max_results;
   delete searchParams.fields;
 
-  // Procesar selección de campos
+  
   const { selectedFields } = processFieldSelection(requestedFields, PRODUCTO_AVAILABLE_FIELDS);
 
   // Si no hay filtros de búsqueda
