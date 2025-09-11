@@ -90,10 +90,15 @@ export const searchVentas = async (req, res) => {
 
     } catch (error) {
       console.error(`!!! ERROR AL BUSCAR FOTOS:`, error.message);
-      // En caso de error, agregar array vacío de fotos y mensaje de error
+      // En caso de error, agregar estructura de imágenes vacía
       ventas.forEach(venta => {
-        venta.fotos = [];
-        venta.fotosError = "No se pudieron cargar las fotos.";
+        venta.imagenes = {
+          total: 0,
+          foto_principal: null,
+          fotos_adicionales: [],
+          todas_las_fotos: [],
+          error: "No se pudieron cargar las fotos."
+        };
       });
       return ventas;
     }
