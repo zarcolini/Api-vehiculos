@@ -11,9 +11,6 @@ import systemRoutes from './routes/system.routes.js';
 
 const app = express();
 
-// ============================================================================
-// MIDDLEWARES PERSONALIZADOS
-// ============================================================================
 
 /**
  * Middleware para limpiar y parsear JSON con manejo de errores mejorado
@@ -162,9 +159,6 @@ const errorHandler = (err, req, res, next) => {
     });
 };
 
-// ============================================================================
-// CONFIGURACIÓN DE MIDDLEWARES
-// ============================================================================
 
 // Logging de inicio
 console.log('\n🚀 Iniciando servidor...');
@@ -185,9 +179,6 @@ app.use(cleanAndParseJSON);
 // Autenticación (comentar si no se necesita)
 // app.use(authenticate);
 
-// ============================================================================
-// RUTAS
-// ============================================================================
 
 // Ruta de salud/estado
 app.get('/api/health', (req, res) => {
@@ -208,9 +199,6 @@ app.use('/api/system', systemRoutes);
 // Ruta legacy (mantener compatibilidad)
 app.use('/api', ventasRoutes);
 
-// ============================================================================
-// MANEJO DE ERRORES Y 404
-// ============================================================================
 
 // Middleware para rutas no encontradas
 app.use('*', (req, res) => {
@@ -233,9 +221,6 @@ app.use('*', (req, res) => {
 // Middleware de manejo de errores
 app.use(errorHandler);
 
-// ============================================================================
-// INICIO DEL SERVIDOR
-// ============================================================================
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
