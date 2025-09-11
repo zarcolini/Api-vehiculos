@@ -114,7 +114,8 @@ export const searchVentas = async (req, res) => {
         venta.imagenes = {
           total: fotosVenta.length,
           foto_principal: fotoPrincipal,
-          fotos_adicionales: fotosSecundarias
+          fotos_adicionales: fotosSecundarias,
+          todas_las_fotos: fotosVenta
         };
       });
 
@@ -132,6 +133,7 @@ export const searchVentas = async (req, res) => {
           total: 0,
           foto_principal: null,
           fotos_adicionales: [],
+          todas_las_fotos: [],
           error: "No se pudieron cargar las fotos."
         };
       });
