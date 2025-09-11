@@ -21,12 +21,10 @@ export const searchVentas = async (req, res) => {
 
   const searchParams = { ...originalParams };
 
-  // Extraer parámetros de control
   const maxResults = searchParams.max_results;
   const requestedFields = searchParams.fields;
   const includePhotos = searchParams.include_photos === true || searchParams.include_photos === 'true';
   
-  // Limpiar parámetros de control antes de la búsqueda
   delete searchParams.max_results;
   delete searchParams.fields;
   delete searchParams.include_photos;
@@ -35,12 +33,6 @@ export const searchVentas = async (req, res) => {
 
   const { selectedFields } = processFieldSelection(requestedFields, VENTAS_AVAILABLE_FIELDS);
 
-  /**
-   * Función auxiliar para obtener fotos de múltiples ventas.
-   * Simplifica la salida de las fotos a solo nombres de archivo.
-   * @param {Array} ventas - Array de ventas
-   * @returns {Array} - Array de ventas con fotos adjuntas en formato simple
-   */
   const attachPhotosToVentas = async (ventas) => {
     if (!ventas || ventas.length === 0) return ventas;
 
@@ -54,7 +46,7 @@ export const searchVentas = async (req, res) => {
           FROM ventas_fotos
           WHERE id_venta IN (${placeholders})
           ORDER BY id_venta, principal DESC, id ASC
-      `;
+      `.trim(); // Se añade .trim() para eliminar espacios en blanco
 
       console.log(`-> Buscando fotos para ${ventaIds.length} ventas...`);
       const [fotosRows] = await db.execute(fotosQuery, ventaIds);
@@ -78,13 +70,10 @@ export const searchVentas = async (req, res) => {
         });
       });
 
-      // Adjuntar fotos a cada venta con la estructura simplificada
       ventas.forEach(venta => {
         const fotosVenta = fotosPorVenta[venta.id] || [];
-        
         const fotoPrincipalObj = fotosVenta.find(foto => foto.es_principal) || null;
         const fotosSecundariasArr = fotosVenta.filter(foto => !foto.es_principal);
-        
         const nombresFotosAdicionales = fotosSecundariasArr.map(foto => foto.nombre_archivo);
         const fotosAdicionalesString = nombresFotosAdicionales.join(', ');
 
@@ -115,7 +104,6 @@ export const searchVentas = async (req, res) => {
     }
   };
 
-  // Caso sin parámetros de búsqueda - devolver todas las ventas
   if (!searchParams || Object.keys(searchParams).length === 0) {
     console.log("Sin parámetros de búsqueda, devolviendo todas las ventas...");
     try {
@@ -149,7 +137,6 @@ export const searchVentas = async (req, res) => {
     }
   }
 
-  // Caso con parámetros de búsqueda
   const baseQuery = `SELECT ${selectedFields} FROM ventas WHERE 1=1`;
   const { query, queryParams } = buildDynamicQuery(baseQuery, searchParams, VENTAS_VALID_FIELDS);
   
