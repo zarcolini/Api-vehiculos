@@ -31,7 +31,7 @@ export const searchProductos = async (req, res) => {
   if (!searchParams || Object.keys(searchParams).length === 0) {
     console.log("Sin filtros, devolviendo todos los productos...");
     try {
-      let query = `SELECT ${selectedFields} FROM producto`;
+      let query = `SELECT ${selectedFields} FROM producto ORDER BY id DESC`;
       query += processLimit(maxResults);
 
       const [rows] = await db.execute(query);
