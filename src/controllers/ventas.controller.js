@@ -114,7 +114,8 @@ export const searchVentas = async (req, res) => {
         venta.imagenes = {
           total: fotosVenta.length,
           foto_principal: fotoPrincipal,
-          fotos_adicionales: fotosSecundarias
+          fotos_adicionales: fotosSecundarias,
+          todas_las_fotos: fotosVenta
         };
       });
 
