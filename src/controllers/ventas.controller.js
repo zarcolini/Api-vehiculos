@@ -35,7 +35,7 @@ export const searchVentas = async (req, res) => {
 
   const attachPhotosToVentas = async (ventas) => {
     if (!ventas || ventas.length === 0) return ventas;
-
+//
     try {
       const ventaIds = ventas.map(venta => venta.id);
       if (ventaIds.length === 0) return ventas;
