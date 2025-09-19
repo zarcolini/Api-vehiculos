@@ -6,7 +6,7 @@ const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_DATABASE', 'DB
 
 for (const varName of requiredEnvVars) {
     if (!process.env[varName]) {
-        console.error(` rror Crítico: La variable de entorno ${varName} no está definida.`);
+        console.error(`Error Crítico: La variable de entorno ${varName} no está definida.`);
         console.error('Por favor, revisa que tu archivo .env esté en la raíz del proyecto y contenga todas las variables necesarias.');
         process.exit(1);
     }
@@ -18,6 +18,7 @@ const dbSettings = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     port: parseInt(process.env.DB_PORT, 10),
+    charset: 'utf8mb4', 
     connectionLimit: 10,
     queueLimit: 0,
     acquireTimeout: 60000,
