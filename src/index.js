@@ -195,7 +195,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/ventas', ventasRoutes);
 app.use('/api/productos', productosRoutes);
 app.use('/api/system', systemRoutes);
-
+app.use('/catalogo', express.static('/data'));
 // Ruta legacy (mantener compatibilidad)
 app.use('/api', ventasRoutes);
 
