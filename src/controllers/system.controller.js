@@ -108,7 +108,7 @@ export const getTableStructure = async (req, res) => {
  */
 export const downloadCsvVehiculos = (req, res) => {
     try {
-        const filePath = path.resolve(process.cwd(), 'public', 'vehiculos_disponibles.csv');
+        const filePath = path.resolve(process.cwd(), '/data', 'vehiculos_disponibles.csv');
 
         if (!fs.existsSync(filePath)) {
             console.log(`-> Intento de descarga fallido: Archivo no encontrado en ${filePath}`);

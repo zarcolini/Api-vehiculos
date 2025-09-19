@@ -105,7 +105,7 @@ export const generarCsvVehiculosDisponibles = async () => {
         const csv = json2csvParser.parse(vehiculosEnVenta);
 
         // 5. Guardar el archivo en el volumen persistente
-        const outputPath = path.resolve('/Data', 'vehiculos_disponibles.csv');
+        const outputPath = path.resolve('/data', 'vehiculos_disponibles.csv');
         
         await fs.mkdir(path.dirname(outputPath), { recursive: true });
         await fs.writeFile(outputPath, csv);
