@@ -3,7 +3,6 @@ import { searchVentas } from '../controllers/ventas.controller.js';
 
 const router = Router();
 
-// Middleware de Autenticación por Bearer Token
 const bearerTokenAuth = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     
