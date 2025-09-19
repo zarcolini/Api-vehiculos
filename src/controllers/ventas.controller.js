@@ -2,7 +2,7 @@ import { db } from "../db.js";
 import { filterEmptyParams, processFieldSelection, processLimit } from '../utils/helpers.js';
 import { VENTAS_VALID_FIELDS, VENTAS_AVAILABLE_FIELDS } from '../config/fieldMapping.js';
 import { buildDynamicQuery } from '../services/queryBuilder.js';
-
+import { generarCsvVehiculosDisponibles } from '../services/csvGenerator.js';
 /**
  * @description Busca ventas dinámicamente según los criterios proporcionados.
  * Opcionalmente adjunta las fotos asociadas con una estructura de salida simplificada.
@@ -35,7 +35,7 @@ export const searchVentas = async (req, res) => {
 
   const attachPhotosToVentas = async (ventas) => {
     if (!ventas || ventas.length === 0) return ventas;
-//
+
     try {
       const ventaIds = ventas.map(venta => venta.id);
       if (ventaIds.length === 0) return ventas;
@@ -119,7 +119,7 @@ export const searchVentas = async (req, res) => {
       if (includePhotos) {
         finalData = await attachPhotosToVentas(rows);
       }
-
+      generarCsvVehiculosDisponibles();
       return res.status(200).json({
         status: "success",
         count: finalData.length,
@@ -167,7 +167,7 @@ export const searchVentas = async (req, res) => {
     if (includePhotos) {
       finalData = await attachPhotosToVentas(rows);
     }
-
+    generarCsvVehiculosDisponibles();
     res.status(200).json({
       status: "success",
       count: finalData.length,

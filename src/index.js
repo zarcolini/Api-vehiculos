@@ -243,7 +243,7 @@ const server = app.listen(PORT, HOST, () => {
 process.on('SIGTERM', () => {
     console.log('\n Recibida señal SIGTERM, cerrando servidor...');
     server.close(() => {
-        console.log('✅ Servidor cerrado correctamente');
+        console.log('Servidor cerrado correctamente');
         process.exit(0);
     });
 });
@@ -251,7 +251,7 @@ process.on('SIGTERM', () => {
 process.on('SIGINT', () => {
     console.log('\n Recibida señal SIGINT (Ctrl+C), cerrando servidor...');
     server.close(() => {
-        console.log('✅ Servidor cerrado correctamente');
+        console.log('Servidor cerrado correctamente');
         process.exit(0);
     });
 });
