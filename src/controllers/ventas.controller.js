@@ -42,7 +42,6 @@ export const searchVentas = async (req, res) => {
 
       const placeholders = ventaIds.map(() => '?').join(',');
       
-      // FIX: Remove indentation from multi-line SQL query
       const fotosQuery = [
         'SELECT id_venta, nombre_archivo, principal',
         'FROM ventas_fotos',
