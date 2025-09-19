@@ -27,7 +27,7 @@ export const generarCsvVehiculosDisponibles = async () => {
                 v.trasmision,
                 v.kilometraje,
                 v.precio_venta,
-                v.fecha_creacion AS fecha_publicacion
+                v.fecha AS fecha_publicacion -- CORRECCIÓN: Se cambió v.fecha_creacion por v.fecha
             FROM 
                 ventas AS v
             INNER JOIN 
@@ -47,7 +47,7 @@ export const generarCsvVehiculosDisponibles = async () => {
 
         console.log(`-> Se encontraron ${vehiculosEnVenta.length} vehículos. Buscando imágenes...`);
 
-        // 2. Adjuntar las imágenes a los resultados (lógica adaptada de searchVentas)
+        // 2. Adjuntar las imágenes a los resultados
         const ventaIds = vehiculosEnVenta.map(v => v.venta_id);
         const placeholders = ventaIds.map(() => '?').join(',');
         
