@@ -2,20 +2,17 @@
 import { Parser } from 'json2csv';
 import fs from 'fs/promises';
 import path from 'path';
-import { db } from '../db.js'; // Asegúrate que la ruta a tu conexión DB sea correcta
+import { db } from '../db.js';
 
 /**
- * @description Consulta vehículos marcados como "en venta" (id_estado = 5 en la tabla 'ventas'),
- * combina la información con la tabla 'producto' y genera un archivo CSV.
+ * @description Consulta vehículos en venta, adjunta sus imágenes y genera un archivo CSV.
  * La función sobreescribe el archivo existente cada vez que se ejecuta.
  */
 export const generarCsvVehiculosDisponibles = async () => {
-    console.log('-> Iniciando la generación del CSV con datos de Ventas y Productos...');
+    console.log('-> Iniciando la generación del CSV con datos de Ventas, Productos e Imágenes...');
 
     try {
-        // 1. Obtener los datos combinados con un INNER JOIN
-        // Esta consulta une 'ventas' y 'producto' donde el id_producto coincida.
-        // Filtra únicamente por las ventas que tienen el estado 5.
+        // 1. Consulta SQL principal para obtener los datos del vehículo
         const query = `
             SELECT 
                 p.id AS producto_id,
@@ -23,14 +20,14 @@ export const generarCsvVehiculosDisponibles = async () => {
                 p.marca, 
                 p.modelo, 
                 p.anio,
-                p.condicion,
-                p.tipo_combustible,
-                p.transmision,
-                p.kilometraje,
-                v.precio AS precio_venta,  -- Asumo que el precio está en la tabla 'ventas'
-                v.fecha_publicacion,
-                p.cilindraje,
-                p.color_exterior
+                p.color,
+                p.cilindrada,
+                p.placa,
+                p.chasis,
+                v.trasmision,
+                v.kilometraje,
+                v.precio_venta,
+                v.fecha_creacion AS fecha_publicacion
             FROM 
                 ventas AS v
             INNER JOIN 
@@ -48,40 +45,74 @@ export const generarCsvVehiculosDisponibles = async () => {
             return;
         }
 
-        console.log(`-> Se encontraron ${vehiculosEnVenta.length} vehículos para el CSV.`);
+        console.log(`-> Se encontraron ${vehiculosEnVenta.length} vehículos. Buscando imágenes...`);
 
-        // 2. Definir las columnas y cabeceras del CSV
-        // ¡IMPORTANTE! El 'value' debe coincidir con los nombres/alias de las columnas en el SELECT.
+        // 2. Adjuntar las imágenes a los resultados (lógica adaptada de searchVentas)
+        const ventaIds = vehiculosEnVenta.map(v => v.venta_id);
+        const placeholders = ventaIds.map(() => '?').join(',');
+        
+        const fotosQuery = `
+            SELECT id_venta, nombre_archivo, principal 
+            FROM ventas_fotos 
+            WHERE id_venta IN (${placeholders}) 
+            ORDER BY id_venta, principal DESC, id ASC
+        `;
+        
+        const [fotosRows] = await db.execute(fotosQuery, ventaIds);
+
+        const fotosPorVenta = {};
+        fotosRows.forEach(foto => {
+            if (!fotosPorVenta[foto.id_venta]) {
+                fotosPorVenta[foto.id_venta] = [];
+            }
+            let esPrincipal = foto.principal && Buffer.isBuffer(foto.principal) ? foto.principal[0] === 1 : Boolean(foto.principal);
+            fotosPorVenta[foto.id_venta].push({
+                nombre_archivo: foto.nombre_archivo || '',
+                es_principal: esPrincipal,
+            });
+        });
+
+        vehiculosEnVenta.forEach(vehiculo => {
+            const fotos = fotosPorVenta[vehiculo.venta_id] || [];
+            const fotoPrincipal = fotos.find(f => f.es_principal) || null;
+            const fotosAdicionales = fotos.filter(f => !f.es_principal).map(f => f.nombre_archivo);
+
+            vehiculo.foto_principal = fotoPrincipal ? fotoPrincipal.nombre_archivo : '';
+            vehiculo.fotos_adicionales = fotosAdicionales.join(', ');
+        });
+
+        // 3. Definición de columnas del CSV, incluyendo las imágenes
         const fields = [
             { label: 'ID Producto', value: 'producto_id' },
             { label: 'ID Venta', value: 'venta_id' },
             { label: 'Marca', value: 'marca' },
             { label: 'Modelo', value: 'modelo' },
             { label: 'Año', value: 'anio' },
-            { label: 'Precio de Venta (USD)', value: 'precio_venta' },
-            { label: 'Condición', value: 'condicion' },
+            { label: 'Color', value: 'color' },
+            { label: 'Cilindrada', value: 'cilindrada' },
+            { label: 'Placa', value: 'placa' },
+            { label: 'Chasis', value: 'chasis' },
+            { label: 'Transmision', value: 'trasmision' },
             { label: 'Kilometraje', value: 'kilometraje' },
-            { label: 'Combustible', value: 'tipo_combustible' },
-            { label: 'Transmisión', value: 'transmision' },
-            { label: 'Cilindraje', value: 'cilindraje' },
-            { label: 'Color', value: 'color_exterior' },
-            { label: 'Fecha de Publicación', value: 'fecha_publicacion' }
+            { label: 'Precio Venta', value: 'precio_venta' },
+            { label: 'Fecha Publicacion', value: 'fecha_publicacion' },
+            { label: 'Foto Principal', value: 'foto_principal' },
+            { label: 'Fotos Adicionales', value: 'fotos_adicionales' },
         ];
 
-        // 3. Convertir los datos JSON a formato CSV
+        // 4. Convertir los datos JSON (ya con imágenes) a formato CSV
         const json2csvParser = new Parser({ fields });
         const csv = json2csvParser.parse(vehiculosEnVenta);
 
-        // 4. Guardar el archivo CSV en una carpeta pública
-        const outputPath = path.resolve(process.cwd(), '/Data', 'vehiculos_disponibles.csv');
+        // 5. Guardar el archivo en el volumen persistente
+        const outputPath = path.resolve('/data', 'vehiculos_disponibles.csv');
         
-        // Asegurarse de que el directorio 'public' exista
         await fs.mkdir(path.dirname(outputPath), { recursive: true });
         await fs.writeFile(outputPath, csv);
 
-        console.log(` CSV generado exitosamente en: ${outputPath}`);
+        console.log(`CSV generado exitosamente en: ${outputPath}`);
 
     } catch (error) {
-        console.error('!!! ERROR al generar el archivo CSV:', error);
+        console.error('ERROR al generar el archivo CSV:', error);
     }
 };
