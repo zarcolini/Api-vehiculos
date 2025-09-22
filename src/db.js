@@ -6,7 +6,7 @@ const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_DATABASE', 'DB
 
 for (const varName of requiredEnvVars) {
     if (!process.env[varName]) {
-        console.error(`❌ Error Crítico: La variable de entorno ${varName} no está definida.`);
+        console.error(`Error Crítico: La variable de entorno ${varName} no está definida.`);
         console.error('Por favor, revisa que tu archivo .env esté en la raíz del proyecto y contenga todas las variables necesarias.');
         process.exit(1);
     }
@@ -39,15 +39,15 @@ export async function getConnection() {
         
         // Probar la conexión
         const connection = await pool.getConnection();
-        console.log('✅ Conexión a MariaDB establecida correctamente.');
-        console.log(`🌐 Conectado a: ${process.env.DB_HOST}:${process.env.DB_PORT}`);
-        console.log(`📊 Base de datos: ${process.env.DB_DATABASE}`);
+        console.log('Conexión a MariaDB establecida correctamente.');
+        console.log(`Conectado a: ${process.env.DB_HOST}:${process.env.DB_PORT}`);
+        console.log(`Base de datos: ${process.env.DB_DATABASE}`);
         connection.release();
         
         return pool;
     } catch (error) {
-        console.error('❌ Error al conectar con MariaDB:', error.message);
-        console.error('🔍 Detalles del error:', {
+        console.error('Error al conectar con MariaDB:', error.message);
+        console.error('Detalles del error:', {
             host: process.env.DB_HOST,
             port: process.env.DB_PORT,
             database: process.env.DB_DATABASE,

@@ -55,16 +55,16 @@ const cleanAndParseJSON = (req, res, next) => {
 
             // Log solo si hubo cambios en la limpieza
             if (cleanedData !== rawData) {
-                console.log('🧹 JSON después de limpiar:', cleanedData);
+                console.log('JSON después de limpiar:', cleanedData);
             }
             
             // Parsear JSON limpiado
             req.body = JSON.parse(cleanedData);
-            console.log('✅ JSON parseado exitosamente');
+            console.log('JSON parseado exitosamente');
             
             next();
         } catch (error) {
-            console.error('❌ Error parseando JSON:', error.message);
+            console.error(' Error parseando JSON:', error.message);
             
             // Respuesta de error más informativa
             res.status(400).json({ 
@@ -79,7 +79,7 @@ const cleanAndParseJSON = (req, res, next) => {
 
     // Manejar errores de conexión
     req.on('error', (error) => {
-        console.error('❌ Error en la solicitud:', error);
+        console.error('Error en la solicitud:', error);
         res.status(400).json({
             status: 'error',
             message: 'Error procesando la solicitud'
@@ -96,14 +96,14 @@ const requestLogger = (req, res, next) => {
     const url = req.originalUrl;
     const ip = req.ip || req.connection.remoteAddress;
     
-    console.log(`\n🌐 [${timestamp}] ${method} ${url} - IP: ${ip}`);
+    console.log(`\n [${timestamp}] ${method} ${url} - IP: ${ip}`);
     
     // Log del body para POST/PUT/PATCH (solo primeros caracteres)
     if (['POST', 'PUT', 'PATCH'].includes(method) && req.body) {
         const bodyStr = JSON.stringify(req.body);
         const truncatedBody = bodyStr.length > 200 ? 
             bodyStr.substring(0, 200) + '...' : bodyStr;
-        console.log(`📦 Body: ${truncatedBody}`);
+        console.log(` Body: ${truncatedBody}`);
     }
     
     next();
@@ -132,7 +132,7 @@ const authenticate = (req, res, next) => {
  * Middleware de manejo de errores global
  */
 const errorHandler = (err, req, res, next) => {
-    console.error('💥 Error no capturado:', err);
+    console.error('Error no capturado:', err);
     
     // Error de validación JSON
     if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
@@ -161,10 +161,10 @@ const errorHandler = (err, req, res, next) => {
 
 
 // Logging de inicio
-console.log('\n🚀 Iniciando servidor...');
-console.log(`🔐 Clave maestra: ${process.env.MASTER_API_KEY ? '✅ Configurada' : '❌ No configurada'}`);
-console.log(`🗄️  Base de datos: ${process.env.DB_HOST || 'localhost'}`);
-console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}\n`);
+console.log('\nIniciando servidor...');
+console.log(`Clave maestra: ${process.env.MASTER_API_KEY ? 'Configurada' : 'No configurada'}`);
+console.log(`Base de datos: ${process.env.DB_HOST || 'localhost'}`);
+console.log(`Entorno: ${process.env.NODE_ENV || 'development'}\n`);
 
 // Middlewares globales
 app.use(cors({
@@ -202,14 +202,14 @@ app.use('/api', ventasRoutes);
 
 // Middleware para rutas no encontradas
 app.use('*', (req, res) => {
-    console.log(`⚠️  Ruta no encontrada: ${req.method} ${req.originalUrl}`);
+    console.log(`Ruta no encontrada: ${req.method} ${req.originalUrl}`);
     res.status(404).json({
         status: 'fail',
         message: `Endpoint no encontrado: ${req.method} ${req.originalUrl}`,
         available_endpoints: [
             'GET /api/health',
-            'GET /api/tables', 
-            'POST /api/table-structure',
+            'GET /api/system/tables', 
+            'POST /api/system/table-structure',
             'POST /api/productos/search',
             'POST /api/productos/disponibles',
             'POST /api/productos/vendidos',
@@ -226,9 +226,9 @@ const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 
 const server = app.listen(PORT, HOST, () => {
-    console.log(`\n✅ Servidor iniciado exitosamente`);
-    console.log(`🌐 Dirección: http://${HOST}:${PORT}`);
-    console.log(`📋 Endpoints disponibles:`);
+    console.log(`\n Servidor iniciado exitosamente`);
+    console.log(` Dirección: http://${HOST}:${PORT}`);
+    console.log(` Endpoints disponibles:`);
     console.log(`   • GET  /api/health`);
     console.log(`   • GET  /api/tables`);
     console.log(`   • POST /api/table-structure`);
@@ -236,35 +236,35 @@ const server = app.listen(PORT, HOST, () => {
     console.log(`   • POST /api/productos/disponibles`);
     console.log(`   • POST /api/productos/vendidos`);
     console.log(`   • POST /api/ventas/search`);
-    console.log(`\n🎯 API lista para recibir solicitudes\n`);
+    console.log(`\n API lista para recibir solicitudes\n`);
 });
 
 // Manejo graceful de cierre
 process.on('SIGTERM', () => {
-    console.log('\n🛑 Recibida señal SIGTERM, cerrando servidor...');
+    console.log('\n Recibida señal SIGTERM, cerrando servidor...');
     server.close(() => {
-        console.log('✅ Servidor cerrado correctamente');
+        console.log(' Servidor cerrado correctamente');
         process.exit(0);
     });
 });
 
 process.on('SIGINT', () => {
-    console.log('\n🛑 Recibida señal SIGINT (Ctrl+C), cerrando servidor...');
+    console.log('\n Recibida señal SIGINT (Ctrl+C), cerrando servidor...');
     server.close(() => {
-        console.log('✅ Servidor cerrado correctamente');
+        console.log(' Servidor cerrado correctamente');
         process.exit(0);
     });
 });
 
 // Manejo de errores no capturados
 process.on('unhandledRejection', (reason, promise) => {
-    console.error('💥 Promesa rechazada no manejada:', reason);
+    console.error(' Promesa rechazada no manejada:', reason);
     // No cerrar el servidor automáticamente, solo loggear
 });
 
 process.on('uncaughtException', (error) => {
-    console.error('💥 Excepción no capturada:', error);
-    console.log('🛑 Cerrando servidor por excepción crítica...');
+    console.error(' Excepción no capturada:', error);
+    console.log('Cerrando servidor por excepción crítica...');
     server.close(() => {
         process.exit(1);
     });
