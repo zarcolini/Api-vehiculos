@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API de Vehículos - Documentación</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3, h4 {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            color: #1a1a1a;
+        }
+        h1 { font-size: 2.2em; }
+        h2 { font-size: 1.8em; margin-top: 40px; }
+        h3 { font-size: 1.5em; margin-top: 30px; }
+        h4 { font-size: 1.2em; margin-top: 25px; border-bottom: none; }
+        code, pre {
+            background-color: #f6f8fa;
+            border-radius: 6px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.9em;
+        }
+        code { padding: 0.2em 0.4em; }
+        pre { padding: 16px; overflow: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #dfe2e5;
+            padding: 8px 12px;
+        }
+        th {
+            background-color: #f6f8fa;
+            font-weight: bold;
+            text-align: left;
+        }
+        ul { padding-left: 20px; }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #ddd;
+            margin: 40px 0;
+        }
+        strong { color: #005a9c; }
+    </style>
+</head>
+<body>
+
+    <h1>📖 API de Vehículos - Documentación</h1>
+
+    <h2>Información General</h2>
+    <p><strong>Base URL:</strong> <code>http://52.22.44.176:3000</code><br>
+    <strong>Formato:</strong> JSON<br>
+    <strong>Codificación:</strong> UTF-8</p>
+
+    <h3>Características</h3>
+    <ul>
+        <li>✅ Filtros dinámicos de búsqueda</li>
+        <li>✅ Selección de campos específicos (<code>fields</code>)</li>
+        <li>✅ Límite de resultados (<code>max_results</code>)</li>
+        <li>✅ Búsquedas parciales con LIKE</li>
+        <li>✅ Filtros de rango (mínimo/máximo)</li>
+        <li>✅ Arrays de IDs múltiples</li>
+        <li>✅ Inclusión de fotos en ventas</li>
+    </ul>
+
+    <h4>4. Buscar Estados</h4>
+    <pre><code>POST /api/estados/search</code></pre>
+    <p><strong>Todos los estados:</strong></p>
+    <pre><code class="language-json">{}</code></pre>
+    <p><strong>Por nombre:</strong></p>
+    <pre><code class="language-json">{
+  "nombre": "Vendido",
+  "fields": ["id", "nombre", "ventas_reparacion"]
+}</code></pre>
+    <p><strong>Estados para ventas/reparación:</strong></p>
+    <pre><code class="language-json">{
+  "ventas_reparacion": 1,
+  "envio_correo": 1
+}</code></pre>
+
+    <h4>Campos de Búsqueda - Estados</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Campo</th>
+                <th>Operador</th>
+                <th>Ejemplo</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>id</code></td>
+                <td><code>=</code></td>
+                <td><code>{"id": 1}</code></td>
+                <td>ID exacto del estado</td>
+            </tr>
+            <tr>
+                <td><code>ids</code></td>
+                <td><code>IN</code></td>
+                <td><code>{"ids": [1,2,3]}</code></td>
+                <td>Múltiples IDs de estados</td>
+            </tr>
+            <tr>
+                <td><code>nombre</code></td>
+                <td><code>LIKE</code></td>
+                <td><code>{"nombre": "Vendido"}</code></td>
+                <td>Búsqueda parcial en nombre</td>
+            </tr>
+            <tr>
+                <td><code>envio_correo</code></td>
+                <td><code>=</code></td>
+                <td><code>{"envio_correo": 1}</code></td>
+                <td>Estados que envían correo</td>
+            </tr>
+            <tr>
+                <td><code>ventas_reparacion</code></td>
+                <td><code>=</code></td>
+                <td><code>{"ventas_reparacion": 1}</code></td>
+                <td>Estados para ventas/reparación</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>Autenticación</h2>
+    <p>Todos los endpoints requieren autenticación mediante <strong>Bearer Token</strong>:</p>
+    <pre><code>Authorization: Bearer 42FH9l1LIL07dU0cjAqGA9EcsqVRlrxPYCWK10AIxpRUo1qicdYwMdyLOw33AGzBssScBetx80BNXSECQc02VKUb3c6j5axsenzIQEkIZOPIXMk5xBaLx9bSPrDQ8xdb
+Content-Type: application/json</code></pre>
+    <p><strong>Ejemplo cURL:</strong></p>
+    <pre><code class="language-bash">curl -X POST "http://52.22.44.176:3000/api/productos/search" \
+  -H "Authorization: Bearer [TU_TOKEN]" \
+  -H "Content-Type: application/json" \
+  -d '{"marca": "Toyota"}'</code></pre>
+
+    <hr>
+
+    <h2>Endpoints Disponibles</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Método</th>
+                <th>Endpoint</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>GET</code></td>
+                <td><code>/api/health</code></td>
+                <td>Estado del servidor</td>
+            </tr>
+            <tr>
+                <td><code>GET</code></td>
+                <td><code>/api/tables</code></td>
+                <td>Lista de tablas disponibles</td>
+            </tr>
+            <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/table-structure</code></td>
+                <td>Estructura de una tabla</td>
+            </tr>
+            <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/productos/search</code></td>
+                <td>Buscar productos</td>
+            </tr>
+            <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/ventas/search</code></td>
+                <td>Buscar ventas</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>Utilidades de Filtrado</h2>
+    <h3>Filtros de Parámetros Vacíos</h3>
+    <p>La API automáticamente filtra parámetros vacíos o nulos:</p>
+    <pre><code class="language-javascript">// Estos valores se ignoran automáticamente:
+{
+  "marca": "Toyota",      // ✅ Válido
+  "modelo": "",           // ❌ Ignorado (cadena vacía)
+  "anio": null,           // ❌ Ignorado (null)
+  "color": undefined,     // ❌ Ignorado (undefined)
+  "ids": [],              // ❌ Ignorado (array vacío)
+  "precio": "null"        // ❌ Ignorado (string "null")
+}
+
+// Resultado procesado:
+{
+  "marca": "Toyota"
+}</code></pre>
+
+    <h3>Validación de Límites</h3>
+    <p>Los límites de resultados se validan automáticamente:</p>
+    <pre><code class="language-json">{
+  "marca": "Toyota",
+  "max_results": 50      // Debe ser número entero positivo
+}</code></pre>
+
+    <hr>
+
+    <h2>Filtros de Campos</h2>
+    <p>Todos los endpoints de búsqueda soportan el parámetro <code>fields</code> para seleccionar columnas específicas:</p>
+    <h3>Sintaxis</h3>
+    <pre><code class="language-json">{
+  "marca": "Toyota",
+  "fields": ["id", "nombre", "precio_venta", "km"],
+  "max_results": 10
+}</code></pre>
+
+    <h3>Campos Disponibles - Productos</h3>
+    <pre><code class="language-json">[
+  "id", "codigo_alterno", "nombre", "codigo_grupo", "habilitado",
+  "congelado", "item_compra", "item_venta", "item_inventario",
+  "codigo_hertz", "tipo", "tipo_sap", "marca", "anio", "modelo",
+  "color", "cilindrada", "serie", "motor", "placa", "tipo_vehiculo",
+  "chasis", "precio_costo", "precio_venta", "km", "k5", "k10",
+  "k20", "k40", "k100", "sincronizado", "horas", "tipo_mant", "clase"
+]</code></pre>
+
+    <h3>Campos Disponibles - Ventas</h3>
+    <pre><code class="language-json">[
+  "id", "numero", "id_usuario", "id_tienda", "id_estado", "id_producto",
+  "kilometraje", "cilindraje", "trasmision", "precio_minimo",
+  "precio_maximo", "precio_venta", "fecha", "hora", "fecha_vendido",
+  "fecha_negociacion", "fecha_asignacion", "fecha_reparacion_completada",
+  "fecha_promesa", "id_vendedor", "id_televentas", "id_impuesto",
+  "id_factura", "foto", "id_inspeccion", "id_estado_pintura",
+  "id_estado_interior", "id_estado_mecanica", "tipo_ventas_reparacion",
+  "reproceso", "observaciones", "observaciones_reparacion",
+  "fecha_creacion", "usuario_creacion", "fecha_modificacion", "usuario_modificacion"
+]</code></pre>
+
+    <h3>Campos Disponibles - Estados</h3>
+    <pre><code class="language-json">[
+  "id", "nombre", "foto", "envio_correo", "ventas_reparacion"
+]</code></pre>
+
+    <hr>
+
+    <h2>Endpoints GET</h2>
+    <h3>1. Salud del Servidor</h3>
+    <pre><code>GET /api/health</code></pre>
+    <p><strong>Respuesta:</strong></p>
+    <pre><code class="language-json">{
+  "status": "success",
+  "message": "Servidor funcionando correctamente",
+  "timestamp": "2024-12-14T10:30:00Z",
+  "uptime": 3600
+}</code></pre>
+
+    <h3>2. Listar Tablas</h3>
+    <pre><code>GET /api/tables</code></pre>
+    <p><strong>Respuesta:</strong></p>
+    <pre><code class="language-json">{
+  "status": "success",
+  "count": 4,
+  "data": {
+    "tables": ["producto", "ventas", "estados", "usuarios"]
+  }
+}</code></pre>
+
+    <hr>
+
+    <h2>Endpoints POST</h2>
+    <h3>1. Estructura de Tabla</h3>
+    <pre><code>POST /api/table-structure</code></pre>
+    <p><strong>Body:</strong></p>
+    <pre><code class="language-json">{ "tableName": "producto" }</code></pre>
+
+    <h3>2. Buscar Productos</h3>
+    <pre><code>POST /api/productos/search</code></pre>
+    <h4>Ejemplos de Búsqueda</h4>
+    <p><strong>Todos los productos:</strong></p>
+    <pre><code class="language-json">{}</code></pre>
+    <p><strong>Por ID específico:</strong></p>
+    <pre><code class="language-json">{ "id": 14034 }</code></pre>
+    <p><strong>Por múltiples IDs:</strong></p>
+    <pre><code class="language-json">{ "ids": [14034, 15672, 16890] }</code></pre>
+    <p><strong>Búsqueda avanzada:</strong></p>
+    <pre><code class="language-json">{
+  "marca": "Toyota",
+  "tipo_vehiculo": "Pick up",
+  "anio_desde": "2020",
+  "anio_hasta": "2024",
+  "precio_venta_maximo": 500000,
+  "km_maximo": 50000,
+  "habilitado": 1,
+  "fields": ["id", "nombre", "marca", "precio_venta", "km"],
+  "max_results": 20
+}</code></pre>
+
+    <h4>Campos de Búsqueda - Productos</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Campo</th>
+                <th>Operador</th>
+                <th>Ejemplo</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><code>id</code></td><td><code>=</code></td><td><code>{"id": 14034}</code></td><td>ID exacto</td></tr>
+            <tr><td><code>ids</code></td><td><code>IN</code></td><td><code>{"ids": [1,2,3]}</code></td><td>Múltiples IDs</td></tr>
+            <tr><td><code>codigo_alterno</code></td><td><code>LIKE</code></td><td><code>{"codigo_alterno": "ABC123"}</code></td><td>Código alterno</td></tr>
+            <tr><td><code>nombre</code></td><td><code>LIKE</code></td><td><code>{"nombre": "Hilux"}</code></td><td>Búsqueda parcial en nombre</td></tr>
+            <tr><td><code>marca</code></td><td><code>LIKE</code></td><td><code>{"marca": "Toyota"}</code></td><td>Búsqueda parcial</td></tr>
+            <tr><td><code>anio</code></td><td><code>=</code></td><td><code>{"anio": "2024"}</code></td><td>Año exacto</td></tr>
+            <tr><td><code>anio_desde</code></td><td><code>&gt;=</code></td><td><code>{"anio_desde": "2020"}</code></td><td>Desde año</td></tr>
+            <tr><td><code>anio_hasta</code></td><td><code>&lt;=</code></td><td><code>{"anio_hasta": "2024"}</code></td><td>Hasta año</td></tr>
+            <tr><td><code>modelo</code></td><td><code>LIKE</code></td><td><code>{"modelo": "Camry"}</code></td><td>Modelo del vehículo</td></tr>
+            <tr><td><code>color</code></td><td><code>LIKE</code></td><td><code>{"color": "Blanco"}</code></td><td>Color del vehículo</td></tr>
+            <tr><td><code>cilindrada</code></td><td><code>LIKE</code></td><td><code>{"cilindrada": "2.4"}</code></td><td>Cilindrada del motor</td></tr>
+            <tr><td><code>tipo_vehiculo</code></td><td><code>LIKE</code></td><td><code>{"tipo_vehiculo": "Pick up"}</code></td><td>Tipo de vehículo</td></tr>
+            <tr><td><code>serie</code></td><td><code>LIKE</code></td><td><code>{"serie": "ABC123"}</code></td><td>Serie del motor</td></tr>
+            <tr><td><code>motor</code></td><td><code>LIKE</code></td><td><code>{"motor": "4AFE"}</code></td><td>Código del motor</td></tr>
+            <tr><td><code>placa</code></td><td><code>LIKE</code></td><td><code>{"placa": "PBA123"}</code></td><td>Placa del vehículo</td></tr>
+            <tr><td><code>chasis</code></td><td><code>LIKE</code></td><td><code>{"chasis": "XYZ456"}</code></td><td>Número de chasis</td></tr>
+            <tr><td><code>precio_costo</code></td><td><code>=</code></td><td><code>{"precio_costo": 150000}</code></td><td>Precio costo exacto</td></tr>
+            <tr><td><code>precio_costo_minimo</code></td><td><code>&gt;=</code></td><td><code>{"precio_costo_minimo": 100000}</code></td><td>Precio costo mínimo</td></tr>
+            <tr><td><code>precio_costo_maximo</code></td><td><code>&lt;=</code></td><td><code>{"precio_costo_maximo": 300000}</code></td><td>Precio costo máximo</td></tr>
+            <tr><td><code>precio_venta</code></td><td><code>=</code></td><td><code>{"precio_venta": 200000}</code></td><td>Precio venta exacto</td></tr>
+            <tr><td><code>precio_venta_minimo</code></td><td><code>&gt;=</code></td><td><code>{"precio_venta_minimo": 100000}</code></td><td>Precio venta mínimo</td></tr>
+            <tr><td><code>precio_venta_maximo</code></td><td><code>&lt;=</code></td><td><code>{"precio_venta_maximo": 500000}</code></td><td>Precio venta máximo</td></tr>
+            <tr><td><code>km</code></td><td><code>=</code></td><td><code>{"km": 50000}</code></td><td>Kilometraje exacto</td></tr>
+            <tr><td><code>km_minimo</code></td><td><code>&gt;=</code></td><td><code>{"km_minimo": 10000}</code></td><td>Kilometraje mínimo</td></tr>
+            <tr><td><code>km_maximo</code></td><td><code>&lt;=</code></td><td><code>{"km_maximo": 50000}</code></td><td>Kilometraje máximo</td></tr>
+            <tr><td><code>horas</code></td><td><code>=</code></td><td><code>{"horas": 1000}</code></td><td>Horas exactas</td></tr>
+            <tr><td><code>horas_minimo</code></td><td><code>&gt;=</code></td><td><code>{"horas_minimo": 500}</code></td><td>Horas mínimas</td></tr>
+            <tr><td><code>horas_maximo</code></td><td><code>&lt;=</code></td><td><code>{"horas_maximo": 2000}</code></td><td>Horas máximas</td></tr>
+            <tr><td><code>habilitado</code></td><td><code>=</code></td><td><code>{"habilitado": 1}</code></td><td>Producto habilitado</td></tr>
+            <tr><td><code>congelado</code></td><td><code>=</code></td><td><code>{"congelado": 0}</code></td><td>Producto no congelado</td></tr>
+            <tr><td><code>item_venta</code></td><td><code>=</code></td><td><code>{"item_venta": 1}</code></td><td>Es item de venta</td></tr>
+            <tr><td><code>item_compra</code></td><td><code>=</code></td><td><code>{"item_compra": 1}</code></td><td>Es item de compra</td></tr>
+            <tr><td><code>item_inventario</code></td><td><code>=</code></td><td><code>{"item_inventario": 1}</code></td><td>Es item de inventario</td></tr>
+            <tr><td><code>tipo</code></td><td><code>=</code></td><td><code>{"tipo": "V"}</code></td><td>Tipo de producto</td></tr>
+            <tr><td><code>tipo_mant</code></td><td><code>=</code></td><td><code>{"tipo_mant": "P"}</code></td><td>Tipo de mantenimiento</td></tr>
+            <tr><td><code>codigo_grupo</code></td><td><code>LIKE</code></td><td><code>{"codigo_grupo": "GRP1"}</code></td><td>Código de grupo</td></tr>
+            <tr><td><code>clase</code></td><td><code>LIKE</code></td><td><code>{"clase": "SEDAN"}</code></td><td>Clase del vehículo</td></tr>
+        </tbody>
+    </table>
+
+    <h3>3. Buscar Ventas</h3>
+    <pre><code>POST /api/ventas/search</code></pre>
+    <p><strong>Parámetros especiales para ventas:</strong></p>
+    <ul>
+        <li><code>include_photos</code>: Incluye información de fotos asociadas (estructura simplificada)</li>
+    </ul>
+    <p><strong>Todas las ventas:</strong></p>
+    <pre><code class="language-json">{}</code></pre>
+    <p><strong>Por producto con fotos:</strong></p>
+    <pre><code class="language-json">{
+  "producto_id": 14034,
+  "include_photos": true,
+  "fields": ["id", "precio_venta", "fecha_vendido"],
+  "max_results": 10
+}</code></pre>
+    <p><strong>Por rango de fechas:</strong></p>
+    <pre><code class="language-json">{
+  "fecha_desde": "2024-01-01",
+  "fecha_hasta": "2024-12-31",
+  "precio_minimo": 100000,
+  "fields": ["id", "id_producto", "precio_venta", "fecha_vendido"]
+}</code></pre>
+
+    <h4>Campos de Búsqueda - Ventas</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Campo</th>
+                <th>Operador</th>
+                <th>Ejemplo</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><code>id</code></td><td><code>=</code></td><td><code>{"id": 5001}</code></td><td>ID exacto de venta</td></tr>
+            <tr><td><code>ids</code></td><td><code>IN</code></td><td><code>{"ids": [5001,5002,5003]}</code></td><td>Múltiples IDs de venta</td></tr>
+            <tr><td><code>producto_id</code></td><td><code>=</code></td><td><code>{"producto_id": 14034}</code></td><td>ID del producto vendido</td></tr>
+            <tr><td><code>productos_ids</code></td><td><code>IN</code></td><td><code>{"productos_ids": [14034,15672]}</code></td><td>Múltiples IDs de productos</td></tr>
+            <tr><td><code>numero</code></td><td><code>=</code></td><td><code>{"numero": "V001"}</code></td><td>Número de venta</td></tr>
+            <tr><td><code>id_usuario</code></td><td><code>=</code></td><td><code>{"id_usuario": 123}</code></td><td>ID del usuario</td></tr>
+            <tr><td><code>id_tienda</code></td><td><code>=</code></td><td><code>{"id_tienda": 1}</code></td><td>ID de la tienda</td></tr>
+            <tr><td><code>id_estado</code></td><td><code>=</code></td><td><code>{"id_estado": 2}</code></td><td>ID del estado</td></tr>
+            <tr><td><code>id_vendedor</code></td><td><code>=</code></td><td><code>{"id_vendedor": 456}</code></td><td>ID del vendedor</td></tr>
+            <tr><td><code>precio_venta</code></td><td><code>=</code></td><td><code>{"precio_venta": 250000}</code></td><td>Precio venta exacto</td></tr>
+            <tr><td><code>precio_minimo</code></td><td><code>&gt;=</code></td><td><code>{"precio_minimo": 100000}</code></td><td>Precio mínimo</td></tr>
+            <tr><td><code>precio_maximo</code></td><td><code>&lt;=</code></td><td><code>{"precio_maximo": 500000}</code></td><td>Precio máximo</td></tr>
+            <tr><td><code>fecha</code></td><td><code>=</code></td><td><code>{"fecha": "2024-01-15"}</code></td><td>Fecha exacta</td></tr>
+            <tr><td><code>fecha_desde</code></td><td><code>&gt;=</code></td><td><code>{"fecha_desde": "2024-01-01"}</code></td><td>Desde fecha</td></tr>
+            <tr><td><code>fecha_hasta</code></td><td><code>&lt;=</code></td><td><code>{"fecha_hasta": "2024-12-31"}</code></td><td>Hasta fecha</td></tr>
+            <tr><td><code>fecha_vendido</code></td><td><code>=</code></td><td><code>{"fecha_vendido": "2024-01-20"}</code></td><td>Fecha de venta</td></tr>
+            <tr><td><code>trasmision</code></td><td><code>=</code></td><td><code>{"trasmision": "Manual"}</code></td><td>Tipo de transmisión</td></tr>
+            <tr><td><code>kilometraje</code></td><td><code>=</code></td><td><code>{"kilometraje": 25000}</code></td><td>Kilometraje exacto</td></tr>
+            <tr><td><code>tipo_ventas_reparacion</code></td><td><code>=</code></td><td><code>{"tipo_ventas_reparacion": "R"}</code></td><td>Tipo venta/reparación</td></tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>Ejemplos Prácticos</h2>
+    <h3>Caso 1: Buscar Toyota Hilux 2024</h3>
+    <pre><code class="language-json">{
+  "marca": "Toyota",
+  "nombre": "Hilux",
+  "anio": "2024",
+  "habilitado": 1,
+  "fields": [
+    "id", "nombre", "marca", "modelo", "anio",
+    "color", "precio_venta", "km", "motor", "cilindrada"
+  ],
+  "max_results": 5
+}</code></pre>
+
+    <h3>Caso 2: Vehículos Disponibles de Bajo Kilometraje</h3>
+    <pre><code class="language-json">{
+  "km_maximo": 10000,
+  "item_venta": 1,
+  "habilitado": 1,
+  "congelado": 0,
+  "fields": ["id", "nombre", "marca", "km", "precio_venta"],
+  "max_results": 20
+}</code></pre>
+
+    <hr>
+
+    <h2>Códigos de Respuesta</h2>
+    <h3>Respuestas Exitosas</h3>
+    <p><strong>200 - Success:</strong></p>
+    <pre><code class="language-json">{
+  "status": "success",
+  "count": 5,
+  "data": [...],
+  "limited": true,
+  "max_results_applied": 10,
+  "fields_selected": ["id", "nombre", "precio_venta"]
+}</code></pre>
+    <p><strong>404 - No encontrado:</strong></p>
+    <pre><code class="language-json">{
+  "status": "fail",
+  "message": "No se encontraron productos con los criterios especificados."
+}</code></pre>
+
+    <h3>Respuestas de Error</h3>
+    <p><strong>400 - Bad Request:</strong></p>
+    <pre><code class="language-json">{
+  "status": "error",
+  "message": "JSON malformado. Verifique la sintaxis.",
+  "received_data": "{ marca: Toyota, }"
+}</code></pre>
+    <p><strong>401 - Unauthorized:</strong></p>
+    <pre><code class="language-json">{
+  "status": "error",
+  "message": "Token de autorización inválido"
+}</code></pre>
+    <p><strong>415 - Unsupported Media Type:</strong></p>
+    <pre><code class="language-json">{
+  "status": "error",
+  "message": "Content-Type no soportado. Se esperaba application/json."
+}</code></pre>
+
+    <hr>
+
+    <h2>Troubleshooting</h2>
+    <h3>Problemas Comunes</h3>
+    <h4>1. Error 415 - Content-Type</h4>
+    <p><strong>Problema:</strong> <code>Unsupported Media Type</code><br>
+    <strong>Solución:</strong> Agregar header <code>Content-Type: application/json</code></p>
+
+    <h4>2. Error 400 - JSON Malformado</h4>
+    <p><strong>Problema:</strong></p>
+    <pre><code class="language-json">{ marca: "Toyota", precio_venta:, }</code></pre>
+    <p><strong>Solución:</strong></p>
+    <pre><code class="language-json">{ "marca": "Toyota", "precio_venta": null }</code></pre>
+
+    <h4>3. Error 401 - Sin Autorización</h4>
+    <p><strong>Problema:</strong> Token faltante o inválido<br>
+    <strong>Solución:</strong> Verificar el Bearer Token en headers</p>
+
+    <h4>4. Error 404 - Sin Resultados</h4>
+    <p><strong>Problema:</strong> Filtros muy restrictivos<br>
+    <strong>Solución:</strong> Ampliar criterios de búsqueda o usar <code>{}</code></p>
+
+    <h3>Tips de Optimización</h3>
+    <ol>
+        <li><strong>Use <code>fields</code></strong> para reducir el tamaño de respuesta</li>
+        <li><strong>Use <code>max_results</code></strong> para limitar resultados</li>
+        <li><strong>Combine filtros</strong> para búsquedas específicas</li>
+        <li><strong>Use arrays de IDs</strong> para consultas múltiples eficientes</li>
+        <li><strong>Use <code>include_photos: true</code></strong> solo cuando necesite imágenes</li>
+    </ol>
+
+    <h3>Formato de Fechas</h3>
+    <ul>
+        <li><strong>Formato:</strong> <code>YYYY-MM-DD</code></li>
+        <li><strong>Ejemplo:</strong> <code>"2024-12-14"</code></li>
+        <li><strong>Zona horaria:</strong> UTC</li>
+    </ul>
+
+    <h3>Valores Booleanos</h3>
+    <ul>
+        <li><strong>Verdadero:</strong> <code>1</code> o <code>true</code></li>
+        <li><strong>Falso:</strong> <code>0</code> o <code>false</code></li>
+    </ul>
+
+    <hr>
+
+    <p><strong>Versión:</strong> 2.1</p>
+
+</body>
+</html>

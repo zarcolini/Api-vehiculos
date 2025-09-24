@@ -1,20 +1,8 @@
-# 📖 API de Vehículos - Documentación Completa
-
-## Tabla de Contenidos
-- [Información General](#información-general)
-- [Autenticación](#autenticación)
-- [Filtros de Campos (NEW)](#filtros-de-campos-new)
-- [Endpoints GET](#endpoints-get)
-- [Endpoints POST](#endpoints-post)
-- [Ejemplos Prácticos](#ejemplos-prácticos)
-- [Códigos de Respuesta](#códigos-de-respuesta)
-- [Troubleshooting](#troubleshooting)
-
----
+# 📖 API de Vehículos - Documentación
 
 ## Información General
 
-**Base URL:** `https://tu-api.com/api`  
+**Base URL:** `http://52.22.44.176:3000`  
 **Formato:** JSON  
 **Codificación:** UTF-8  
 
@@ -25,6 +13,43 @@
 - ✅ Búsquedas parciales con LIKE
 - ✅ Filtros de rango (mínimo/máximo)
 - ✅ Arrays de IDs múltiples
+- ✅ Inclusión de fotos en ventas
+
+### 4. Buscar Estados
+```http
+POST /api/estados/search
+```
+
+**Todos los estados:**
+```json
+{}
+```
+
+**Por nombre:**
+```json
+{
+  "nombre": "Vendido",
+  "fields": ["id", "nombre", "ventas_reparacion"]
+}
+```
+
+**Estados para ventas/reparación:**
+```json
+{
+  "ventas_reparacion": 1,
+  "envio_correo": 1
+}
+```
+
+#### Campos de Búsqueda - Estados
+
+| Campo | Operador | Ejemplo | Descripción |
+|-------|----------|---------|-------------|
+| `id` | `=` | `{"id": 1}` | ID exacto del estado |
+| `ids` | `IN` | `{"ids": [1,2,3]}` | Múltiples IDs de estados |
+| `nombre` | `LIKE` | `{"nombre": "Vendido"}` | Búsqueda parcial en nombre |
+| `envio_correo` | `=` | `{"envio_correo": 1}` | Estados que envían correo |
+| `ventas_reparacion` | `=` | `{"ventas_reparacion": 1}` | Estados para ventas/reparación |
 
 ---
 
@@ -33,23 +58,71 @@
 Todos los endpoints requieren autenticación mediante **Bearer Token**:
 
 ```http
-Authorization: Bearer TU_MASTER_API_KEY
+Authorization: Bearer 42FH9l1LIL07dU0cjAqGA9EcsqVRlrxPYCWK10AIxpRUo1qicdYwMdyLOw33AGzBssScBetx80BNXSECQc02VKUb3c6j5axsenzIQEkIZOPIXMk5xBaLx9bSPrDQ8xdb
 Content-Type: application/json
 ```
 
 **Ejemplo cURL:**
 ```bash
-curl -X POST "https://tu-api.com/api/productos/search" \
-  -H "Authorization: Bearer cc03a6ab-18c5-4ba9-ac33-8068d9d1df7b" \
+curl -X POST "http://52.22.44.176:3000/api/productos/search" \
+  -H "Authorization: Bearer [TU_TOKEN]" \
   -H "Content-Type: application/json" \
   -d '{"marca": "Toyota"}'
 ```
 
 ---
 
-## Filtros de Campos (NEW)
+## Endpoints Disponibles
 
-Todas las funciones de búsqueda soportan el parámetro `fields` para seleccionar columnas específicas:
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/health` | Estado del servidor |
+| `GET` | `/api/tables` | Lista de tablas disponibles |
+| `POST` | `/api/table-structure` | Estructura de una tabla |
+| `POST` | `/api/productos/search` | Buscar productos |
+| `POST` | `/api/ventas/search` | Buscar ventas |
+
+---
+
+## Utilidades de Filtrado
+
+### Filtros de Parámetros Vacíos
+
+La API automáticamente filtra parámetros vacíos o nulos:
+
+```javascript
+// Estos valores se ignoran automáticamente:
+{
+  "marca": "Toyota",     // ✅ Válido
+  "modelo": "",          // ❌ Ignorado (cadena vacía)
+  "anio": null,          // ❌ Ignorado (null)
+  "color": undefined,    // ❌ Ignorado (undefined)
+  "ids": [],             // ❌ Ignorado (array vacío)
+  "precio": "null"       // ❌ Ignorado (string "null")
+}
+
+// Resultado procesado:
+{
+  "marca": "Toyota"
+}
+```
+
+### Validación de Límites
+
+Los límites de resultados se validan automáticamente:
+
+```json
+{
+  "marca": "Toyota",
+  "max_results": 50      // Debe ser número entero positivo
+}
+```
+
+---
+
+## Filtros de Campos
+
+Todos los endpoints de búsqueda soportan el parámetro `fields` para seleccionar columnas específicas:
 
 ### Sintaxis
 ```json
@@ -63,25 +136,36 @@ Todas las funciones de búsqueda soportan el parámetro `fields` para selecciona
 ### Campos Disponibles - Productos
 ```json
 [
-  "id", "codigo_alterno", "nombre", "marca", "modelo", "anio", 
-  "color", "precio_venta", "precio_costo", "km", "tipo_vehiculo",
-  "motor", "cilindrada", "serie", "chasis", "placa", "habilitado",
-  "congelado", "item_venta", "item_compra", "item_inventario"
+  "id", "codigo_alterno", "nombre", "codigo_grupo", "habilitado",
+  "congelado", "item_compra", "item_venta", "item_inventario",
+  "codigo_hertz", "tipo", "tipo_sap", "marca", "anio", "modelo",
+  "color", "cilindrada", "serie", "motor", "placa", "tipo_vehiculo",
+  "chasis", "precio_costo", "precio_venta", "km", "k5", "k10",
+  "k20", "k40", "k100", "sincronizado", "horas", "tipo_mant", "clase"
 ]
 ```
 
 ### Campos Disponibles - Ventas
 ```json
 [
-  "id", "id_producto", "precio_venta", "kilometraje", "trasmision",
-  "id_estado", "id_tienda", "fecha_vendido", "fecha_creacion"
+  "id", "numero", "id_usuario", "id_tienda", "id_estado", "id_producto",
+  "kilometraje", "cilindraje", "trasmision", "precio_minimo",
+  "precio_maximo", "precio_venta", "fecha", "hora", "fecha_vendido",
+  "fecha_negociacion", "fecha_asignacion", "fecha_reparacion_completada",
+  "fecha_promesa", "id_vendedor", "id_televentas", "id_impuesto",
+  "id_factura", "foto", "id_inspeccion", "id_estado_pintura",
+  "id_estado_interior", "id_estado_mecanica", "tipo_ventas_reparacion",
+  "reproceso", "observaciones", "observaciones_reparacion",
+  "fecha_creacion", "usuario_creacion", "fecha_modificacion", "usuario_modificacion"
 ]
 ```
 
-### Beneficios
-- 🚀 **Respuestas más rápidas** - Solo transfiere datos necesarios
-- 💾 **Menor ancho de banda** - Reduce el tamaño de respuesta
-- 📱 **Optimizado para móviles** - Perfecto para apps móviles
+### Campos Disponibles - Estados
+```json
+[
+  "id", "nombre", "foto", "envio_correo", "ventas_reparacion"
+]
+```
 
 ---
 
@@ -118,29 +202,11 @@ GET /api/tables
 }
 ```
 
-### 3. Estadísticas de Ventas
-```http
-GET /api/productos/estadisticas-ventas
-```
-
-**Respuesta:**
-```json
-{
-  "status": "success",
-  "data": {
-    "total_productos": 1250,
-    "productos_vendidos": 856,
-    "productos_disponibles": 394,
-    "porcentaje_vendidos": "68.48%"
-  }
-}
-```
-
 ---
 
 ## Endpoints POST
 
-### 4. Estructura de Tabla
+### 1. Estructura de Tabla
 ```http
 POST /api/table-structure
 ```
@@ -150,26 +216,7 @@ POST /api/table-structure
 { "tableName": "producto" }
 ```
 
-**Respuesta:**
-```json
-{
-  "status": "success",
-  "tableName": "producto",
-  "fieldsCount": 25,
-  "data": {
-    "structure": [
-      {
-        "field": "id",
-        "type": "int",
-        "null": "NO",
-        "key": "PRI"
-      }
-    ]
-  }
-}
-```
-
-### 5. Buscar Productos
+### 2. Buscar Productos
 ```http
 POST /api/productos/search
 ```
@@ -207,92 +254,65 @@ POST /api/productos/search
 ```
 
 #### Campos de Búsqueda - Productos
+
 | Campo | Operador | Ejemplo | Descripción |
 |-------|----------|---------|-------------|
 | `id` | `=` | `{"id": 14034}` | ID exacto |
 | `ids` | `IN` | `{"ids": [1,2,3]}` | Múltiples IDs |
+| `codigo_alterno` | `LIKE` | `{"codigo_alterno": "ABC123"}` | Código alterno |
+| `nombre` | `LIKE` | `{"nombre": "Hilux"}` | Búsqueda parcial en nombre |
 | `marca` | `LIKE` | `{"marca": "Toyota"}` | Búsqueda parcial |
 | `anio` | `=` | `{"anio": "2024"}` | Año exacto |
 | `anio_desde` | `>=` | `{"anio_desde": "2020"}` | Desde año |
 | `anio_hasta` | `<=` | `{"anio_hasta": "2024"}` | Hasta año |
-| `precio_venta_minimo` | `>=` | `{"precio_venta_minimo": 100000}` | Precio mínimo |
-| `precio_venta_maximo` | `<=` | `{"precio_venta_maximo": 500000}` | Precio máximo |
+| `modelo` | `LIKE` | `{"modelo": "Camry"}` | Modelo del vehículo |
+| `color` | `LIKE` | `{"color": "Blanco"}` | Color del vehículo |
+| `cilindrada` | `LIKE` | `{"cilindrada": "2.4"}` | Cilindrada del motor |
+| `tipo_vehiculo` | `LIKE` | `{"tipo_vehiculo": "Pick up"}` | Tipo de vehículo |
+| `serie` | `LIKE` | `{"serie": "ABC123"}` | Serie del motor |
+| `motor` | `LIKE` | `{"motor": "4AFE"}` | Código del motor |
+| `placa` | `LIKE` | `{"placa": "PBA123"}` | Placa del vehículo |
+| `chasis` | `LIKE` | `{"chasis": "XYZ456"}` | Número de chasis |
+| `precio_costo` | `=` | `{"precio_costo": 150000}` | Precio costo exacto |
+| `precio_costo_minimo` | `>=` | `{"precio_costo_minimo": 100000}` | Precio costo mínimo |
+| `precio_costo_maximo` | `<=` | `{"precio_costo_maximo": 300000}` | Precio costo máximo |
+| `precio_venta` | `=` | `{"precio_venta": 200000}` | Precio venta exacto |
+| `precio_venta_minimo` | `>=` | `{"precio_venta_minimo": 100000}` | Precio venta mínimo |
+| `precio_venta_maximo` | `<=` | `{"precio_venta_maximo": 500000}` | Precio venta máximo |
+| `km` | `=` | `{"km": 50000}` | Kilometraje exacto |
+| `km_minimo` | `>=` | `{"km_minimo": 10000}` | Kilometraje mínimo |
 | `km_maximo` | `<=` | `{"km_maximo": 50000}` | Kilometraje máximo |
+| `horas` | `=` | `{"horas": 1000}` | Horas exactas |
+| `horas_minimo` | `>=` | `{"horas_minimo": 500}` | Horas mínimas |
+| `horas_maximo` | `<=` | `{"horas_maximo": 2000}` | Horas máximas |
+| `habilitado` | `=` | `{"habilitado": 1}` | Producto habilitado |
+| `congelado` | `=` | `{"congelado": 0}` | Producto no congelado |
+| `item_venta` | `=` | `{"item_venta": 1}` | Es item de venta |
+| `item_compra` | `=` | `{"item_compra": 1}` | Es item de compra |
+| `item_inventario` | `=` | `{"item_inventario": 1}` | Es item de inventario |
+| `tipo` | `=` | `{"tipo": "V"}` | Tipo de producto |
+| `tipo_mant` | `=` | `{"tipo_mant": "P"}` | Tipo de mantenimiento |
+| `codigo_grupo` | `LIKE` | `{"codigo_grupo": "GRP1"}` | Código de grupo |
+| `clase` | `LIKE` | `{"clase": "SEDAN"}` | Clase del vehículo |
 
-### 6. Productos Disponibles
-```http
-POST /api/productos/disponibles
-```
-
-**Todos los disponibles:**
-```json
-{}
-```
-
-**Con filtros:**
-```json
-{
-  "marca": "Toyota",
-  "modelo": "Hilux",
-  "anio": "2024",
-  "precio_venta_maximo": 600000,
-  "fields": ["id", "nombre", "precio_venta", "km", "estado_venta"],
-  "max_results": 15
-}
-```
-
-### 7. Productos Vendidos
-```http
-POST /api/productos/vendidos
-```
-
-**Con filtros de fecha:**
-```json
-{
-  "marca": "Nissan",
-  "fecha_venta_desde": "2024-01-01",
-  "fecha_venta_hasta": "2024-12-31",
-  "fields": ["id", "nombre", "precio_vendido", "fecha_venta"],
-  "max_results": 25
-}
-```
-
-### 8. Estado de Venta
-```http
-POST /api/productos/estado-venta
-```
-
-**Por ID:**
-```json
-{ "id": 14034 }
-```
-
-**Por estado:**
-```json
-{ "estado_venta": "Disponible" }
-```
-
-**Estados válidos:**
-- `"Vendido"`
-- `"Disponible"` 
-- `"Congelado"`
-- `"Deshabilitado"`
-- `"No disponible para venta"`
-
-### 9. Buscar Ventas
+### 3. Buscar Ventas
 ```http
 POST /api/ventas/search
 ```
+
+**Parámetros especiales para ventas:**
+- `include_photos`: Incluye información de fotos asociadas (estructura simplificada)
 
 **Todas las ventas:**
 ```json
 {}
 ```
 
-**Por producto:**
+**Por producto con fotos:**
 ```json
 {
   "producto_id": 14034,
+  "include_photos": true,
   "fields": ["id", "precio_venta", "fecha_vendido"],
   "max_results": 10
 }
@@ -308,12 +328,35 @@ POST /api/ventas/search
 }
 ```
 
+#### Campos de Búsqueda - Ventas
+
+| Campo | Operador | Ejemplo | Descripción |
+|-------|----------|---------|-------------|
+| `id` | `=` | `{"id": 5001}` | ID exacto de venta |
+| `ids` | `IN` | `{"ids": [5001,5002,5003]}` | Múltiples IDs de venta |
+| `producto_id` | `=` | `{"producto_id": 14034}` | ID del producto vendido |
+| `productos_ids` | `IN` | `{"productos_ids": [14034,15672]}` | Múltiples IDs de productos |
+| `numero` | `=` | `{"numero": "V001"}` | Número de venta |
+| `id_usuario` | `=` | `{"id_usuario": 123}` | ID del usuario |
+| `id_tienda` | `=` | `{"id_tienda": 1}` | ID de la tienda |
+| `id_estado` | `=` | `{"id_estado": 2}` | ID del estado |
+| `id_vendedor` | `=` | `{"id_vendedor": 456}` | ID del vendedor |
+| `precio_venta` | `=` | `{"precio_venta": 250000}` | Precio venta exacto |
+| `precio_minimo` | `>=` | `{"precio_minimo": 100000}` | Precio mínimo |
+| `precio_maximo` | `<=` | `{"precio_maximo": 500000}` | Precio máximo |
+| `fecha` | `=` | `{"fecha": "2024-01-15"}` | Fecha exacta |
+| `fecha_desde` | `>=` | `{"fecha_desde": "2024-01-01"}` | Desde fecha |
+| `fecha_hasta` | `<=` | `{"fecha_hasta": "2024-12-31"}` | Hasta fecha |
+| `fecha_vendido` | `=` | `{"fecha_vendido": "2024-01-20"}` | Fecha de venta |
+| `trasmision` | `=` | `{"trasmision": "Manual"}` | Tipo de transmisión |
+| `kilometraje` | `=` | `{"kilometraje": 25000}` | Kilometraje exacto |
+| `tipo_ventas_reparacion` | `=` | `{"tipo_ventas_reparacion": "R"}` | Tipo venta/reparación |
+
 ---
 
 ## Ejemplos Prácticos
 
-### Caso 1: Buscar Toyota Hilux 2024 para WhatsApp
-
+### Caso 1: Buscar Toyota Hilux 2024
 ```json
 {
   "marca": "Toyota",
@@ -321,7 +364,7 @@ POST /api/ventas/search
   "anio": "2024",
   "habilitado": 1,
   "fields": [
-    "id", "nombre", "marca", "modelo", "anio", 
+    "id", "nombre", "marca", "modelo", "anio",
     "color", "precio_venta", "km", "motor", "cilindrada"
   ],
   "max_results": 5
@@ -329,7 +372,6 @@ POST /api/ventas/search
 ```
 
 ### Caso 2: Vehículos Disponibles de Bajo Kilometraje
-
 ```json
 {
   "km_maximo": 10000,
@@ -338,26 +380,6 @@ POST /api/ventas/search
   "congelado": 0,
   "fields": ["id", "nombre", "marca", "km", "precio_venta"],
   "max_results": 20
-}
-```
-
-### Caso 3: Análisis de Ventas del Mes
-
-```json
-{
-  "fecha_desde": "2024-12-01",
-  "fecha_hasta": "2024-12-31",
-  "fields": ["id", "id_producto", "precio_venta", "fecha_vendido", "id_estado"],
-  "max_results": 100
-}
-```
-
-### Caso 4: Verificar Disponibilidad por Serie
-
-```json
-{
-  "serie": "LVAV2MBB2RC001224",
-  "fields": ["id", "nombre", "habilitado", "congelado", "item_venta"]
 }
 ```
 
@@ -406,11 +428,11 @@ POST /api/ventas/search
 }
 ```
 
-**500 - Server Error:**
+**415 - Unsupported Media Type:**
 ```json
 {
   "status": "error",
-  "message": "Error interno del servidor"
+  "message": "Content-Type no soportado. Se esperaba application/json."
 }
 ```
 
@@ -425,7 +447,7 @@ POST /api/ventas/search
 **Solución:** Agregar header `Content-Type: application/json`
 
 #### 2. Error 400 - JSON Malformado
-**Problema:** 
+**Problema:**
 ```json
 { marca: "Toyota", precio_venta:, }
 ```
@@ -449,6 +471,7 @@ POST /api/ventas/search
 2. **Use `max_results`** para limitar resultados
 3. **Combine filtros** para búsquedas específicas
 4. **Use arrays de IDs** para consultas múltiples eficientes
+5. **Use `include_photos: true`** solo cuando necesite imágenes
 
 ### Formato de Fechas
 - **Formato:** `YYYY-MM-DD`
@@ -461,20 +484,4 @@ POST /api/ventas/search
 
 ---
 
-## Resumen de Endpoints
-
-| Método | Endpoint | Descripción | Body |
-|--------|----------|-------------|------|
-| `GET` | `/api/health` | Estado del servidor | ❌ |
-| `GET` | `/api/tables` | Lista tablas | ❌ |
-| `GET` | `/api/productos/estadisticas-ventas` | Estadísticas | ❌ |
-| `POST` | `/api/table-structure` | Estructura tabla | `{"tableName": "..."}` |
-| `POST` | `/api/productos/search` | Buscar productos | `{}` + filtros |
-| `POST` | `/api/productos/disponibles` | Productos disponibles | `{}` + filtros |
-| `POST` | `/api/productos/vendidos` | Productos vendidos | `{}` + filtros |
-| `POST` | `/api/productos/estado-venta` | Estado productos | filtros requeridos |
-| `POST` | `/api/ventas/search` | Buscar ventas | `{}` + filtros |
-
----
-
-**Versión:** 2.0
+**Versión:** 2.1
