@@ -13,7 +13,7 @@ export const generarCsvVehiculosDisponibles = async () => {
 
     try {
         // URL base para las imágenes
-        const baseUrl = 'https://flota.inglosa/uploa_d_ventas/';
+        const baseUrl = 'https://flota.inglosa.hn/uploa_d_ventas/';
 
         // 1. Consulta SQL principal para obtener los datos del vehículo (CORREGIDA)
         const query = `SELECT 
