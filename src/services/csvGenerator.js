@@ -15,31 +15,29 @@ export const generarCsvVehiculosDisponibles = async () => {
         // URL base para las imágenes
         const baseUrl = 'https://flota.inglosa/uploa_d_ventas/';
 
-        // 1. Consulta SQL principal para obtener los datos del vehículo
-        const query = `
-            SELECT 
-                p.id AS producto_id,
-                v.id AS venta_id,
-                p.marca, 
-                p.modelo, 
-                p.anio,
-                p.color,
-                p.cilindrada,
-                p.placa,
-                p.chasis,
-                v.trasmision,
-                v.kilometraje,
-                v.precio_venta,
-                v.fecha AS fecha_publicacion
-            FROM 
-                ventas AS v
-            INNER JOIN 
-                producto AS p ON v.id_producto = p.id
-            WHERE 
-                v.id_estado = 5 -- El ID que representa "en venta"
-            ORDER BY 
-                p.marca, p.modelo;
-        `;
+        // 1. Consulta SQL principal para obtener los datos del vehículo (CORREGIDA)
+        const query = `SELECT 
+            p.id AS producto_id,
+            v.id AS venta_id,
+            p.marca, 
+            p.modelo, 
+            p.anio,
+            p.color,
+            p.cilindrada,
+            p.placa,
+            p.chasis,
+            v.trasmision,
+            v.kilometraje,
+            v.precio_venta,
+            v.fecha AS fecha_publicacion
+        FROM 
+            ventas AS v
+        INNER JOIN 
+            producto AS p ON v.id_producto = p.id
+        WHERE 
+            v.id_estado = 5 -- El ID que representa "en venta"
+        ORDER BY 
+            p.marca, p.modelo;`;
 
         const [vehiculosEnVenta] = await db.execute(query);
 
@@ -54,12 +52,10 @@ export const generarCsvVehiculosDisponibles = async () => {
         const ventaIds = vehiculosEnVenta.map(v => v.venta_id);
         const placeholders = ventaIds.map(() => '?').join(',');
         
-        const fotosQuery = `
-            SELECT id_venta, nombre_archivo, principal 
-            FROM ventas_fotos 
-            WHERE id_venta IN (${placeholders}) 
-            ORDER BY id_venta, principal DESC, id ASC
-        `;
+        const fotosQuery = `SELECT id_venta, nombre_archivo, principal 
+        FROM ventas_fotos 
+        WHERE id_venta IN (${placeholders}) 
+        ORDER BY id_venta, principal DESC, id ASC`;
         
         const [fotosRows] = await db.execute(fotosQuery, ventaIds);
 
@@ -80,13 +76,11 @@ export const generarCsvVehiculosDisponibles = async () => {
             const fotos = fotosPorVenta[vehiculo.venta_id] || [];
             const fotoPrincipal = fotos.find(f => f.es_principal) || null;
             
-            // Añadir la URL a la foto principal si existe
             vehiculo.foto_principal = fotoPrincipal ? `${baseUrl}${fotoPrincipal.nombre_archivo}` : '';
             
-            // Filtrar, añadir la URL a cada foto adicional y luego unirlas
             const fotosAdicionales = fotos
                 .filter(f => !f.es_principal)
-                .map(f => `${baseUrl}${f.nombre_archivo}`); // Añadir prefijo aquí
+                .map(f => `${baseUrl}${f.nombre_archivo}`); 
             
             vehiculo.fotos_adicionales = fotosAdicionales.join(', ');
         });
