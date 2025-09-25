@@ -102,7 +102,7 @@ ORDER BY
       { label: "condition", value: () => "used" },
       {
         label: "price",
-        value: (row) => `${row.precio_venta} HNL`, // 👈 Importante: precio + moneda
+        value: (row) => `${row.precio_maximo} HNL`, // 👈 Importante: precio + moneda
       },
       {
         label: "link",
