@@ -30,7 +30,7 @@ export const generarCsvVehiculosDisponibles = async () => {
     p.chasis,
     v.trasmision,
     v.kilometraje,
-    v.precio_venta,
+    v.precio_maximo,
     v.fecha AS fecha_publicacion
 FROM 
     ventas AS v
