@@ -87,7 +87,7 @@ export const generarCsvVehiculosDisponibles = async () => {
 
        
         const fields = [
-            { label: 'ID Producto', value: 'producto_id' },
+            { label: 'Id', value: 'producto_id' },
             { label: 'ID Venta', value: 'venta_id' },
             { label: 'Marca', value: 'marca' },
             { label: 'Modelo', value: 'modelo' },
