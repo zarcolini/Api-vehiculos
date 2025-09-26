@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import crypto from "crypto";
-import { execFile } from "child_process";
+import { exec } from "child_process";
 
 if (!process.env.WEBHOOK_SECRET) {
   console.error(
