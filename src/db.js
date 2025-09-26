@@ -24,7 +24,7 @@ const dbSettings = {
     acquireTimeout: 60000,
     waitForConnections: true,
     reconnect: true,
-    // Configuración SSL
+
     ssl: process.env.NODE_ENV === 'production' ? {
         rejectUnauthorized: false
     } : false,
@@ -38,7 +38,7 @@ export async function getConnection() {
     try {
         const pool = mysql.createPool(dbSettings);
         
-        // Probar la conexión
+
         const connection = await pool.getConnection();
         console.log('Conexión a MariaDB establecida correctamente.');
         console.log(`Conectado a: ${process.env.DB_HOST}:${process.env.DB_PORT}`);
