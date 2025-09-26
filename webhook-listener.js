@@ -43,7 +43,7 @@ app.post("/webhook", verifyGitHubSignature, (req, res) => {
   if (req.body.ref === "refs/heads/main") {
     console.log("Recibido push a la rama main. Iniciando despliegue...");
 
-    execFile("src/services/restart_service.sh", (error, stdout, stderr) => {
+    execFile("src/services/restart_service.bat", (error, stdout, stderr) => {
       if (error) {
         console.error(`Error al ejecutar el script: ${error}`);
         return res
