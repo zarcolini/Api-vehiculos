@@ -70,8 +70,6 @@ app.get("/", (req, res) => {
   );
 });
 
-
-//test
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
